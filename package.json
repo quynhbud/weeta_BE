@@ -1,7 +1,6 @@
 {
   "name": "wita_be",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "pm2 start ecosystem.config.json --no-daemon",
@@ -18,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pm2/agent": "^2.0.1",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
@@ -40,7 +40,7 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "paypal-rest-sdk": "^1.8.1",
-    "pm2": "^5.1.0",
+    "pm2": "^5.2.0",
     "validator": "^13.0.0",
     "winston": "^3.2.1",
     "xss-clean": "^0.1.1"
@@ -61,5 +61,15 @@
     "nodemon": "^2.0.0",
     "prettier": "^2.0.5",
     "supertest": "^6.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quynhbud/wita_BE.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/quynhbud/wita_BE/issues"
+  },
+  "homepage": "https://github.com/quynhbud/wita_BE#readme",
+  "description": ""
 }
