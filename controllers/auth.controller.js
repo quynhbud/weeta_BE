@@ -3,7 +3,7 @@ const httpStatus = require('http-status');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccess } = require('./return.controller');
-const { authService, tokenService, emailService } = require('../services');
+const { authService, tokenService, emailService, accountService } = require('../services');
 
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -25,8 +25,14 @@ const changePassword = catchAsync(async (req, res) => {
   sendSuccess(res, {}, httpStatus.OK, 'Cập nhật thành công');
 });
 
+const updateProfile = catchAsync(async (req, res) => {
+  const account = await accountService.updateAccountById(req.user._id, req.body);
+  sendSuccess(res, account, httpStatus.OK, 'Cập nhật thành công');
+});
+
 module.exports = {
   login,
+  updateProfile,
   changePassword,
   forgotPassword,
 }

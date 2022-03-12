@@ -80,18 +80,18 @@ const getAccount = async() => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateAccountById = async (userId, updateBody) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+const updateAccountById = async (accountId, updateBody) => {
+  const account = await getUserById(accountId);
+  if (!account) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Account not found');
   }
-  if (updateBody.email && (await Account.isEmailTaken(updateBody.email, userId))) {
+  if (updateBody.email && (await Account.isEmailTaken(updateBody.email, accountId))) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  if (await Account.usernameExists(updateBody.username, userId)) {
+  if (await Account.usernameExists(updateBody.username, accountId)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Username already exists');
   }
-  if (await Account.isPhoneTaken(updateBody.phoneNumber, userId)) {
+  if (await Account.isPhoneTaken(updateBody.phoneNumber, accountId)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Phone number already exists');
   }
   if (updateBody.dayOfBirth) {
@@ -101,9 +101,9 @@ const updateAccountById = async (userId, updateBody) => {
     const today = dayOfBirth.getFullYear() + '-' + month + '-' + day;
     updateBody.dayOfBirth = today;
   }
-  Object.assign(user, updateBody);
-  await user.save();
-  return user;
+  Object.assign(account, updateBody);
+  await account.save();
+  return account;
 };
 
 const updateAccountAccess = async (userId) => {
