@@ -80,9 +80,6 @@ const verifyEmail = async (verifyEmailToken) => {
     throw new AppError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };
-
-
-
 module.exports = {
   loginUserWithEmailAndPassword,
   resetPassword,

@@ -27,7 +27,7 @@ const ArticleSchema = mongoose.Schema({
   },
   vendorId: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Vendor',
+    ref: 'Account',
   },
   isApproved: {
     type: Boolean,
@@ -41,7 +41,6 @@ const ArticleSchema = mongoose.Schema({
     type: Date,
     default: Date.now()
   }
-  
 })
 
 const Article = mongoose.model('Article', ArticleSchema);
