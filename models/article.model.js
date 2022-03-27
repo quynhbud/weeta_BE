@@ -6,16 +6,11 @@ const ArticleSchema = mongoose.Schema({
     required: true,
     trim: true,
   },
-  address: {
-    district: Number,
-    ward: Number,
-    street: Number,
-  },
+  district: Number,
+  ward: Number,
+  street: String,
   image: [String],
-  price: {
-    cost: Number,
-    //currency: Number,
-  },
+  price: Number,
   area: Number,
   location: {
     latitude: Number,
@@ -25,9 +20,9 @@ const ArticleSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  vendorId: {
+  lessorId: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Account',
+    ref: 'Lessor',
   },
   isApproved: {
     type: Boolean,
@@ -40,6 +35,26 @@ const ArticleSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now()
+  },
+  startDate: {
+    type: Date,
+  },
+  endDate: {
+    type: Date,
+  },
+  servicePackageId: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'ServicePackage',
+  },
+  timeService: {
+    type: Number,
+  },
+  isDelete:{
+    type: Boolean,
+    default: false,
+  },
+  deletedAt: {
+    type: Date,
   }
 })
 

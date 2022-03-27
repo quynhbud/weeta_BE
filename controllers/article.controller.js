@@ -10,6 +10,18 @@ const createArticle = catchAsync(async (req, res) => {
   sendSuccess(res, { article }, httpStatus.CREATED, 'Article created');
 });
 
+const createdService = catchAsync(async (req, res) => {
+  const service = await articleService.createdService(req.body);
+  sendSuccess(res, { service }, httpStatus.CREATED, 'Service created');
+});
+
+const getListArticle = catchAsync(async (req, res) =>{
+  const listArticle = await articleService.getListArticle(req.query);
+  sendSuccess(res, {listArticle}, httpStatus.OK, 'get list article successfully');
+})
+
 module.exports = {
   createArticle,
+  getListArticle,
+  createdService
 }

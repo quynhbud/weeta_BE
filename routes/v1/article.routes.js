@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.post('/createArticle',auth(), articleController.createArticle);
 
+router.get('/getListArticle',articleController.getListArticle);
+router.post('/createServicePackage',articleController.createdService);
 module.exports = router;
