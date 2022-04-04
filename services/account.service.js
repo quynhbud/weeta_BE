@@ -67,7 +67,7 @@ const checkIsActive = async (id) => {
  * @returns {Promise<User>}
  */
 const getAccountByEmail = async (email) => {
-  return Account.findOne({ $or: [{ email: email }, { username: email }] });
+  return Account.findOne({ email: email });
 };
 
 const getAccount = async() => {

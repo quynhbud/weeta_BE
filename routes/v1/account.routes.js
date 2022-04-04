@@ -9,7 +9,6 @@ router.post('/signup',accountController.createAccount);
 router.get('/get-account', accountController.getAccount);
 
 router.get('/get-account/:id', accountController.getAccountById);
-
 // router
 //   .route('/')
 //   .get(accountController.getAllAccounts)

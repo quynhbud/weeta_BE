@@ -14,14 +14,31 @@ const createdService = catchAsync(async (req, res) => {
   const service = await articleService.createdService(req.body);
   sendSuccess(res, { service }, httpStatus.CREATED, 'Service created');
 });
+const updateArticle = catchAsync(async (req, res) => {
+  const articleId = req.params;
+  const article = await articleService.updateArticle(req.body, articleId);
+  sendSuccess(res, { article }, httpStatus.CREATED, 'Article updated successfully');
+});
+const deleteArticle = catchAsync(async (req, res) => {
+  const articleId = req.params;
+  const article = await articleService.updateArticle(req.body, articleId);
+  sendSuccess(res, { article }, httpStatus.CREATED, 'Article deleted successfully');
+});
 
 const getListArticle = catchAsync(async (req, res) =>{
   const listArticle = await articleService.getListArticle(req.query);
+  sendSuccess(res, {listArticle}, httpStatus.OK, 'get list article successfully');
+})
+const searchArticle = catchAsync(async (req, res) =>{
+  const listArticle = await articleService.searchArticle(req.query);
   sendSuccess(res, {listArticle}, httpStatus.OK, 'get list article successfully');
 })
 
 module.exports = {
   createArticle,
   getListArticle,
-  createdService
+  createdService,
+  searchArticle,
+  updateArticle,
+  deleteArticle,
 }

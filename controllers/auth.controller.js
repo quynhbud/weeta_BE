@@ -15,6 +15,7 @@ const login = catchAsync(async (req, res) => {
 
 const forgotPassword = catchAsync(async (req, res) => {
   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
+  console.log("resetPasswordToken", resetPasswordToken)
   await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
   sendSuccess(res, { token: resetPasswordToken }, httpStatus.OK, 'Reset email sent');
 });
@@ -29,10 +30,21 @@ const updateProfile = catchAsync(async (req, res) => {
   const account = await accountService.updateAccountById(req.user._id, req.body);
   sendSuccess(res, account, httpStatus.OK, 'Cập nhật thành công');
 });
+const sendVerificationEmail = catchAsync(async (req, res) => {
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
+  await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
+  res.status(httpStatus.OK).send();
+});
 
+const verifyEmail = catchAsync(async (req, res) => {
+  await authService.verifyEmail(req.query.token);
+  sendSuccess(res, {}, httpStatus.OK, 'Email confirmed');
+});
 module.exports = {
   login,
   updateProfile,
   changePassword,
   forgotPassword,
+  sendVerificationEmail,
+  verifyEmail
 }

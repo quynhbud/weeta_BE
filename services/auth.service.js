@@ -69,11 +69,11 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
 const verifyEmail = async (verifyEmailToken) => {
   try {
     const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-    const user = await accountService.getUserById(verifyEmailTokenDoc.user);
-    if (!user || !verifyEmailTokenDoc) {
+    const account = await accountService.getAccountById(verifyEmailTokenDoc.user);
+    if (!account || !verifyEmailTokenDoc) {
       throw new Error();
     } else {
-      await accountService.updateUserById(user.id, { isEmailVerified: true });
+      await accountService.updateAccountById(account.id, { isEmailVerified: true });
       //   await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
     }
   } catch (error) {

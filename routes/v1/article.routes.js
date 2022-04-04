@@ -5,8 +5,8 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.post('/createArticle',auth(), articleController.createArticle);
-
 router.get('/getListArticle',articleController.getListArticle);
-router.post('/createServicePackage',articleController.createdService);
+router.post('/createArticle',auth(), articleController.createArticle);
+router.put('/updateArticle/:articleId',auth(), articleController.updateArticle)
+router.get('/searchArticle', articleController.searchArticle);
 module.exports = router;

@@ -30,7 +30,7 @@ const createArticle = async (accountId, data) => {
   return Article.create(article);
 }
 const getListArticle = async (data) => {
-  data.deletedAt = null;
+  data.isDelete = false;
   data.isApproved = true;
   const features = new APIFeatures(Article.find(), data)
     .filter()
@@ -38,6 +38,7 @@ const getListArticle = async (data) => {
     .limitFields()
     .paginate();
   const articles = await features.query;
+  // const articles = await Article.find({title: { $regex: '.*' + data.title + '.*', $options:"$i" } })
   const servicePackageIds = map(articles, 'servicePackageId');
   const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
   const objServicePackage = keyBy(servicePackage, '_id');
@@ -87,8 +88,42 @@ const createService = async (accountId, data) => {
   })
   return Article.create(article);
 }
+const updateArticle = async(data) => {
+  const article = await Article.findById(data.articleId);
+  const updateArticle = await Article.updateOne({_id: accountId}, data);
+  return updateArticle;
+}
+const deleteArticle = async(data) => {
+  const article = await Article.findById(data.articleId);
+  const deleteArticle = await Article.updateOne({_id: accountId}, {isDelete: true});
+  return deleteArticle;
+}
+const removeVN = (Text) => {
+  return Text.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+};
+const searchArticle = async (data) => {
+  let searchField = data.keyword;
+  searchField = removeVN(searchField);
+  let keyword = new RegExp(
+    searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+    'i',
+  );
+  const listArticle = await Article.find();
+  const result = listArticle.map((article) => {
+    if(removeVN(article.title).match(keyword)){
+      return article;
+    };
+  })
+  return result;
+}
 module.exports = {
   createArticle,
   getListArticle,
   createService,
+  searchArticle,
+  updateArticle,
+  deleteArticle,
 };
