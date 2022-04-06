@@ -14,14 +14,13 @@ const login = catchAsync(async (req, res) => {
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
-  const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
-  console.log("resetPasswordToken", resetPasswordToken)
-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
+  const email = req.params.email;
+  const resetPasswordToken = await tokenService.generateResetPasswordToken(email);
+  await emailService.sendResetPasswordEmail(email, resetPasswordToken);
   sendSuccess(res, { token: resetPasswordToken }, httpStatus.OK, 'Reset email sent');
 });
 
 const changePassword = catchAsync(async (req, res) => {
-  console.log(req.user._id);
   await authService.changePassword(req.user._id, req.body);
   sendSuccess(res, {}, httpStatus.OK, 'Cập nhật thành công');
 });
@@ -44,7 +43,7 @@ module.exports = {
   login,
   updateProfile,
   changePassword,
-  forgotPassword,
+   forgotPassword,
   sendVerificationEmail,
   verifyEmail
 }
