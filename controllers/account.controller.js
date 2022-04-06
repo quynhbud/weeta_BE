@@ -3,13 +3,17 @@ const httpStatus = require('http-status');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { accountService, tokenService, emailService, authService } = require('../services');
-const { sendSuccess } = require('./return.controller');
+const { sendSuccess, sendError } = require('./return.controller');
 
 const createAccount = catchAsync(async (req, res) => {
   const user = await accountService.createAccount(req.body);
+  if(user.status === 400){
+    sendError(res, user.status, user.message);
+  }
   const token = await tokenService.generateAuthTokens(user);
   const emailToken = await tokenService.generateVerifyEmailToken(user);
   await emailService.sendVerificationEmail(user.email, emailToken);
+
   // res.status(httpStatus.CREATED).send(user);
   sendSuccess(res, token, httpStatus.CREATED, 'User created');
 });

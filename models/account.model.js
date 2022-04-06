@@ -54,7 +54,7 @@ const AccountSchema = mongoose.Schema({
   role: {
     type: String,
     enum: roles,
-    default: roles.user,
+    default: roles[0],
   },
   gender: {
     type: String,

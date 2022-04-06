@@ -49,7 +49,6 @@ const verifyToken = async (token, type) => {
 const generateAuthTokens = async (account) => {
   const accessTokenExpires = moment.utc().add(7, 'hours').add(config.jwt.accessExpirationMinutes, 'minutes');
   const accessToken = generateToken(account.id, accessTokenExpires, tokenTypes.ACCESS);
-
   return accessToken;
 };
 

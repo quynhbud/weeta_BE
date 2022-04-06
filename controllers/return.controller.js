@@ -7,8 +7,9 @@ const sendSuccess = (res, data, code = 200, message = 'success') => {
   });
 };
 
-const sendError = (res, message) => {
-  return res.status(500).json({
+const sendError = (res,statusCode, message) => {
+  return res.status(statusCode).json({
+    status: statusCode,
     message: message || 'internal server error',
     error: true
   });

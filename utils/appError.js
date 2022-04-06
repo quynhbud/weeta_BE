@@ -3,6 +3,7 @@ class AppError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
+    this.error = true;
     if (stack) {
       this.stack = stack;
     } else {

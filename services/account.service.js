@@ -15,13 +15,22 @@ const AppError = require('../utils/appError');
 const createAccount = async (accountBody) => {
   console.log(accountBody);
   if (await Account.isEmailTaken(accountBody.email)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Email already taken');
+    return {
+      status: 400,
+      message: 'Email already exists'
+    }
   }
   if (await Account.usernameExists(accountBody.username)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Username already exists');
+    return {
+      status: 400,
+      message: 'Username already exists'
+    }
   }
   if (await Account.isPhoneTaken(accountBody.phoneNumber)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Phone number already exists');
+    return {
+      status: 400,
+      message: 'Phone number already exists'
+    }
   }
   return Account.create(accountBody);
 };
