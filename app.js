@@ -56,7 +56,11 @@ if (config.env === 'production') {
 // v1 api routes
 app.use('/api', routes);
 app.get('/test', (req, res, next) => {
-    res.send('Server is alive');
+  res.send('Server is alive');
+})
+
+app.get('/', (req, res, next) => {
+  res.send('hello welcome to Weeta BE ');
 })
 
 // send back a 404 error for any unknown api request

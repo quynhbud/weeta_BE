@@ -43,7 +43,7 @@ module.exports = {
   login,
   updateProfile,
   changePassword,
-   forgotPassword,
+  forgotPassword,
   sendVerificationEmail,
   verifyEmail
 }
