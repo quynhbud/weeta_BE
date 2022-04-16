@@ -5,6 +5,7 @@ const articleRoute = require('./article.routes');
 const lessorRoute = require('./lessor.route');
 const conversationRoute = require('./conversation.routes');
 const messageRoute = require('./message.routes');
+const locationRoute = require('./location.routes');
 
 const router = express.Router();
 
@@ -32,8 +33,11 @@ const defaultRoutes = [
   {
     path: '/message',
     route: messageRoute,
+  },
+  {
+    path: '/location',
+    route: locationRoute,
   }
-  
 ];
 
 defaultRoutes.forEach((route) => {

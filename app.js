@@ -61,7 +61,7 @@ app.get('/test', (req, res, next) => {
 })
 
 app.get('/', (req, res, next) => {
-  res.send('hello welcome to Weeta BE ');
+  res.send('hello welcome to Weeta BE Heroku ');
 })
 
 // send back a 404 error for any unknown api request
