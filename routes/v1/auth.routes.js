@@ -14,6 +14,7 @@ router.put('/update-profile', auth(), validate(authValidation.updateProfile), au
 // router.put('/update-avatar', auth(), validate(authValidation.updateAvatar), authController.updateUserAvatar);
 router.put('/change-password', auth(), validate(authValidation.changePassword), authController.changePassword);
 router.get('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+router.get('/get-profile',auth(), authController.getProfile);
 
 //router.get('/get-current-account', auth(), authController.getCurrentAccount);
 module.exports = router;

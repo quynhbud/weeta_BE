@@ -24,7 +24,10 @@ const changePassword = catchAsync(async (req, res) => {
   await authService.changePassword(req.user._id, req.body);
   sendSuccess(res, {}, httpStatus.OK, 'Cập nhật thành công');
 });
-
+const getProfile = catchAsync(async (req, res) => {
+  const profile = req.user;
+  sendSuccess(res, profile, httpStatus.OK, 'Lấy thông tin thành công')
+})
 const updateProfile = catchAsync(async (req, res) => {
   const account = await accountService.updateAccountById(req.user._id, req.body);
   sendSuccess(res, account, httpStatus.OK, 'Cập nhật thành công');
@@ -45,5 +48,6 @@ module.exports = {
   changePassword,
   forgotPassword,
   sendVerificationEmail,
-  verifyEmail
+  verifyEmail,
+  getProfile
 }

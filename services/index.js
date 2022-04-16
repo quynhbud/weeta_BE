@@ -6,3 +6,5 @@ module.exports.articleService = require('./article.service');
 module.exports.servicePackage = require('./servicePackage.service');
 module.exports.lessorService = require('./lessor.service');
 module.exports.SendSMSService = require('./sendSMS.service');
+module.exports.conversationService = require('./conversation.service');
+module.exports.messageService = require('./message.service');

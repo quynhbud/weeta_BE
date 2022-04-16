@@ -7,3 +7,5 @@ module.exports.Lessor = require('./lessor.model');
 module.exports.Token = require('./token.model');
 module.exports.ServicePackage = require('./servicePackage.model');
 module.exports.MemberPackage = require('./memberPackage.model');
+module.exports.Conversation = require('./conversation.model');
+module.exports.Message = require('./message.model');
