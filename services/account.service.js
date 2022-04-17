@@ -8,7 +8,7 @@ const AppError = require('../utils/appError');
  * @returns {Promise<Account>}
  */
 
- const getUserById = async (id) => {
+const getUserById = async (id) => {
   return Account.findById(id);
 };
 
@@ -79,7 +79,7 @@ const getAccountByEmail = async (email) => {
   return Account.findOne({ email: email });
 };
 
-const getAccount = async() => {
+const getAccount = async () => {
   return Account.find();
 }
 
@@ -148,8 +148,10 @@ const deleteAccountById = async (userId) => {
   await user.remove();
   return user;
 };
-const updateAvatar = async (id,avatar) => {
-  return  await Account.findByIdAndUpdate( id , {avatar: avatar});
+const updateAvatar = async (id, avatar) => {
+  await Account.updateOne({_id: id}, { avatar: avatar });
+  const account = await Account.findById(id);
+  return account;
 }
 
 module.exports = {
