@@ -39,6 +39,10 @@ const AccountSchema = mongoose.Schema({
       message: 'Number phone {VALUE} is invalid. Please try again.',
     },
   },
+  introduction : {
+    type: String,
+    require: false,
+  },
   password: {
     type: String,
     required: true,
