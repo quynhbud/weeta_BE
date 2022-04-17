@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccess, sendError } = require('./return.controller');
 const {Location} = require('./../models');
+const { keyBy } = require('lodash')
 
 
 const getDistricts = catchAsync(async (req, res) => {
@@ -14,13 +15,21 @@ const getDistricts = catchAsync(async (req, res) => {
   sendSuccess(res, district, 200, 'get list districts successfully');
 });
 
-// const getWard = catchAsync(async (req, res) => {
-//   const code = req.params.code;
-//   const province = await Location.findOne({code: 79});
-//   const codeWard = keyBy(province.districts, 'code')
-//   sendSuccess(res, district, 200, 'get list districts successfully');
-// })
+const getWards = catchAsync(async (req, res) => {
+  const code = req.params.codeDistrict;
+  const province = await Location.findOne({code: 79});
+  const objDistrict = keyBy(province.districts, 'code');
+  const district = objDistrict[code] || {};
+  const wards = district.wards.map((ward) => {
+    return {
+      name: ward.name,
+      code: ward.code,
+    }
+  })
+  sendSuccess(res, wards, 200, 'get list wards successfully');
+})
 
 module.exports = {
-  getDistricts
+  getDistricts,
+  getWards
 }

@@ -24,7 +24,7 @@ const LocationSchema = mongoose.Schema({
       codename: String,
       division_type: String,
       short_codename: String,
-      ward: [
+      wards: [
         {
           name: String,
           code: Number,
