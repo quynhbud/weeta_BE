@@ -14,7 +14,7 @@ const ArticleSchema = mongoose.Schema({
   area: Number,
   location: {
     latitude: Number,
-    longtitude: Number,
+    longitude: Number,
   },
   description: {
     type: String,

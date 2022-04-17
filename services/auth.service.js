@@ -15,8 +15,12 @@ const { tokenTypes } = require('../config/tokens');
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await accountService.getAccountByEmail(email);
+  console.log("user", user)
   if (!user || !(await user.isPasswordMatch(password))) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'Sai email hoặc mật khẩu');
+    return {
+      status: 400,
+      msg: "Tài khoản hoặc mật khẩu không đúng"
+    }
   }
   if (!(await accountService.checkVerifyEmail(user._id))) throw new AppError(httpStatus.UNAUTHORIZED, 'Chưa xác nhận email');
   if (!(await accountService.checkIsActive(user._id))) throw new AppError(httpStatus.UNAUTHORIZED, 'Tài khoản đang bị chặn');

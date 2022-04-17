@@ -10,7 +10,7 @@ const createConversation = catchAsync(async (req, res) => {
   const conversation = await conversationService.createConversation(req.body);
   console.log("conversation", conversation)
   if(!conversation){
-    sendError(res, httpStatus.BAD_REQUEST, 'Create conversation fail');
+    return sendError(res, httpStatus.BAD_REQUEST, 'Create conversation fail');
   }
   sendSuccess(res, conversation, httpStatus.CREATED, 'conversation created');
 });
@@ -20,7 +20,7 @@ const getConversation = catchAsync(async (req, res) => {
   const memberId = [req.params.memberId];
   const conversation = await conversationService.getConversation(memberId);
   if(!conversation){
-    sendError(res, httpStatus.NOT_FOUND, 'get conversation faild');
+    return sendError(res, httpStatus.NOT_FOUND, 'get conversation faild');
   }
   sendSuccess(res, conversation, httpStatus.CREATED, 'get conversation successfully');
 });

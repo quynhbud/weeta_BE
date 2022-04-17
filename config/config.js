@@ -64,5 +64,14 @@ const config = {
     from: envVars.EMAIL_FROM,
   },
   frontEndUrl: envVars.FE_URL,
+  firebase: {
+    apiKey : envVars.API_KEY,
+    authDomain : envVars.AUTH_DOMAIN,
+    projectId : envVars.PROJECT_ID,
+    databaseURL: envVars.MONGODB_URL,
+    storageBucket : envVars.STORAGE_BUCKET,
+    messagingSenderId: envVars.MESSAGING_SENDER_ID,
+    appId: envVars.APP_ID
+  }
 };
 module.exports = config;

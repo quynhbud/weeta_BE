@@ -2,12 +2,15 @@ const httpStatus = require('http-status');
 //const pick = require('../utils/pick');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { sendSuccess } = require('./return.controller');
+const { sendSuccess, sendError } = require('./return.controller');
 const { authService, tokenService, emailService, accountService } = require('../services');
 
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+  if(user.status === 400) {
+    return sendError(res,user.status,user.msg)
+  }
   const token = await tokenService.generateAuthTokens(user);
   const { role } = user;
   sendSuccess(res, { token, role, userId: user._id }, httpStatus.OK, 'Đăng nhập thành công');

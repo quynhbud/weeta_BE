@@ -8,7 +8,7 @@ const { sendSuccess, sendError } = require('./return.controller');
 const createAccount = catchAsync(async (req, res) => {
   const user = await accountService.createAccount(req.body);
   if(user.status === 400){
-    sendError(res, user.status, user.message);
+    return sendError(res, user.status, user.message);
   }
   const token = await tokenService.generateAuthTokens(user);
   const emailToken = await tokenService.generateVerifyEmailToken(user);

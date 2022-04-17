@@ -6,6 +6,7 @@ const lessorRoute = require('./lessor.routes');
 const conversationRoute = require('./conversation.routes');
 const messageRoute = require('./message.routes');
 const locationRoute = require('./location.routes');
+const imageRoute = require('./image.routes');
 
 const router = express.Router();
 
@@ -37,6 +38,10 @@ const defaultRoutes = [
   {
     path: '/location',
     route: locationRoute,
+  },
+  {
+    path: '/image',
+    route: imageRoute,
   }
 ];
 
