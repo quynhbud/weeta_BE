@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^5.19.2",
     "@pm2/agent": "^2.0.1",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
@@ -27,8 +28,11 @@
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.2",
+    "express-fileupload": "^1.2.1",
     "express-mongo-sanitize": "^2.0.0",
     "express-rate-limit": "^5.0.0",
+    "firebase": "^8.6.8",
+    "firebase-admin": "^9.10.0",
     "helmet": "^4.1.0",
     "http-status": "^1.4.0",
     "joi": "^17.3.0",
@@ -37,6 +41,7 @@
     "moment": "^2.24.0",
     "mongoose": "^6.2.4",
     "morgan": "^1.9.1",
+    "multer": "^1.4.2",
     "nodemailer": "^6.3.1",
     "nodemon": "^2.0.15",
     "passport": "^0.4.0",
@@ -47,10 +52,6 @@
     "twilio": "^3.76.0",
     "validator": "^13.0.0",
     "winston": "^3.2.1",
-    "express-fileupload": "^1.2.1",
-    "firebase": "^8.6.8",
-    "firebase-admin": "^9.10.0",
-    "multer": "^1.4.2",
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {

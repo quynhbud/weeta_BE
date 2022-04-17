@@ -1,5 +1,15 @@
-const fb = require('firebase');
+const admin = require('firebase-admin')
 const config = require('./config');
-// Creates and initializes a Firebase app instance. Pass options as param
-const firebase = fb.initializeApp(config.firebase);
-module.exports =  firebase;
+var serviceAccount = require("./serviceAccount.json");
+
+// Initialize firebase admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket:config.firebase.storageBucket,
+})
+// Cloud storage
+const bucket = admin.storage().bucket()
+
+module.exports = {
+  bucket
+}
