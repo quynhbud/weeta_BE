@@ -148,6 +148,9 @@ const deleteAccountById = async (userId) => {
   await user.remove();
   return user;
 };
+const updateAvatar = async (id,avatar) => {
+  return  await Account.findByIdAndUpdate( id , {avatar: avatar});
+}
 
 module.exports = {
   getAccount,
@@ -156,6 +159,7 @@ module.exports = {
   getAccountById,
   getAccountByEmail,
   updateAccountById,
+  updateAvatar,
   updateAccountAvatarById,
   deleteAccountById,
   checkVerifyEmail,

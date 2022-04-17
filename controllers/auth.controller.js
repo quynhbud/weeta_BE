@@ -3,7 +3,7 @@ const httpStatus = require('http-status');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccess, sendError } = require('./return.controller');
-const { authService, tokenService, emailService, accountService } = require('../services');
+const { authService, tokenService, emailService, accountService, imageService } = require('../services');
 
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -35,6 +35,12 @@ const updateProfile = catchAsync(async (req, res) => {
   const account = await accountService.updateAccountById(req.user._id, req.body);
   sendSuccess(res, account, httpStatus.OK, 'Cập nhật thành công');
 });
+const updateAvatar = catchAsync(async (req, res) => {
+  const id = req.user._id;
+  const image = await imageService.addImage(req.file)
+  const account = await accountService.updateAvatar(id, image.data);
+  sendSuccess(res, account, httpStatus.OK, 'Cập nhật thành công');
+});
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
   await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
@@ -48,6 +54,7 @@ const verifyEmail = catchAsync(async (req, res) => {
 module.exports = {
   login,
   updateProfile,
+  updateAvatar,
   changePassword,
   forgotPassword,
   sendVerificationEmail,
