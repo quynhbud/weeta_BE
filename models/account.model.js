@@ -12,7 +12,7 @@ const AccountSchema = mongoose.Schema({
   },
   fullname: {
     type: String,
-    required: false,
+    required: true,
     trim: true
   },
   email: {
@@ -41,7 +41,7 @@ const AccountSchema = mongoose.Schema({
   },
   introduction : {
     type: String,
-    require: false,
+    require: true,
   },
   password: {
     type: String,

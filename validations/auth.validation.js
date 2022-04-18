@@ -17,11 +17,10 @@ const updateProfile = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     phoneNumber: Joi.string().required(),
-    username: Joi.string().allow(null, ''),
-    firstName: Joi.string(),
-    surName: Joi.string(),
+    username: Joi.string(),
+    fullname: Joi.string(),
+    introduction: Joi.string(),
     gender: Joi.string(),
-    dayOfBirth: Joi.date(),
   }),
 };
 

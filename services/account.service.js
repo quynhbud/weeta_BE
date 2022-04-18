@@ -103,13 +103,6 @@ const updateAccountById = async (accountId, updateBody) => {
   if (await Account.isPhoneTaken(updateBody.phoneNumber, accountId)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Phone number already exists');
   }
-  if (updateBody.dayOfBirth) {
-    const { dayOfBirth } = updateBody;
-    const day = ('0' + dayOfBirth.getDate()).slice(-2);
-    const month = ('0' + (dayOfBirth.getMonth() + 1)).slice(-2);
-    const today = dayOfBirth.getFullYear() + '-' + month + '-' + day;
-    updateBody.dayOfBirth = today;
-  }
   Object.assign(account, updateBody);
   await account.save();
   return account;
