@@ -30,19 +30,26 @@ const createArticle = async (accountId, data) => {
   return Article.create(article);
 }
 const getListArticle = async (data) => {
+  console.log("data", data)
   data.isDelete = false;
   data.isApproved = true;
-  const features = new APIFeatures(Article.find(), data)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const articles = await features.query;
-  // const articles = await Article.find({title: { $regex: '.*' + data.title + '.*', $options:"$i" } })
+  const page = data.page * 1 || 1;
+  const limit = data.limit * 1 || 10;
+  const skip = (page - 1) * limit;
+  const queryObj = data;
+  const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  excludedFields.forEach((el) => delete queryObj[el]);
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
+  const articles = await Article.find(JSON.parse(queryStr))
+  .sort({createdAt: "desc"})
+  .limit(limit)
+  .skip(skip);
+  const totalArticle = await Article.find(JSON.parse(queryStr)).count();
   const servicePackageIds = map(articles, 'servicePackageId');
   const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
   const objServicePackage = keyBy(servicePackage, '_id');
-  const result = articles.map((itm) => {
+  const article = articles.map((itm) => {
     const { servicePackageId } = itm;
     const servicePackage = objServicePackage[servicePackageId] || {};
     return {
@@ -68,6 +75,10 @@ const getListArticle = async (data) => {
       servicePackageName: servicePackage.serviceName,
     }
   })
+  const result = {
+    data: article,
+    total: totalArticle,
+  }
   return result;
 }
 
@@ -88,14 +99,14 @@ const createService = async (accountId, data) => {
   })
   return Article.create(article);
 }
-const updateArticle = async(data) => {
+const updateArticle = async (data) => {
   const article = await Article.findById(data.articleId);
-  const updateArticle = await Article.updateOne({_id: accountId}, data);
+  const updateArticle = await Article.updateOne({ _id: accountId }, data);
   return updateArticle;
 }
-const deleteArticle = async(data) => {
+const deleteArticle = async (data) => {
   const article = await Article.findById(data.articleId);
-  const deleteArticle = await Article.updateOne({_id: accountId}, {isDelete: true});
+  const deleteArticle = await Article.updateOne({ _id: accountId }, { isDelete: true });
   return deleteArticle;
 }
 const removeVN = (Text) => {
@@ -113,7 +124,7 @@ const searchArticle = async (data) => {
   );
   const listArticle = await Article.find();
   const result = listArticle.map((article) => {
-    if(removeVN(article.title).match(keyword)){
+    if (removeVN(article.title).match(keyword)) {
       return article;
     };
   })

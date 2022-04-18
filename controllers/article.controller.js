@@ -27,7 +27,7 @@ const deleteArticle = catchAsync(async (req, res) => {
 
 const getListArticle = catchAsync(async (req, res) =>{
   const listArticle = await articleService.getListArticle(req.query);
-  sendSuccess(res, {listArticle}, httpStatus.OK, 'get list article successfully');
+  sendSuccess(res, listArticle, httpStatus.OK, 'get list article successfully');
 })
 const searchArticle = catchAsync(async (req, res) =>{
   const listArticle = await articleService.searchArticle(req.query);
