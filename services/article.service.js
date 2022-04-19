@@ -9,7 +9,7 @@ const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeature');
 const { tokenTypes } = require('../config/tokens');
 const { query } = require('../config/logger');
-const { map, keyBy } = require('lodash');
+const { map, keyBy, isEmpty } = require('lodash');
 
 const createArticle = async (accountId, data) => {
   console.log(data);
@@ -30,7 +30,6 @@ const createArticle = async (accountId, data) => {
   return Article.create(article);
 }
 const getListArticle = async (data) => {
-  console.log("data", data)
   data.isDelete = false;
   data.isApproved = true;
   const page = data.page * 1 || 1;
@@ -75,9 +74,14 @@ const getListArticle = async (data) => {
       servicePackageName: servicePackage.serviceName,
     }
   })
+  let isOver = false;
+  if(page*limit  >= totalArticle && !isEmpty(article)) {
+    isOver = true;
+  }
   const result = {
     data: article,
     total: totalArticle,
+    isOver: isOver,
   }
   return result;
 }
