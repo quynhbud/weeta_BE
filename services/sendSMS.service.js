@@ -8,7 +8,6 @@ const phoneNumber = process.env.TWILIO_PHONENUMBER;
 
 const client = new twilio(accountSID, authToken);
 const sendSMS = (data) => {
-  console.log(data)
   client.messages
   .create({
     body: data.message,

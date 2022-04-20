@@ -24,7 +24,6 @@ const identifyPhoneNumber =  async (lessorBody) => {
 }
 
 const createLessor = async (lessorBody) => {
-  console.log(lessorBody);
   if (!await Account.isPhoneTaken(lessorBody.phoneNumber)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Phone number not already exists');
   }

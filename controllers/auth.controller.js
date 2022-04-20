@@ -1,5 +1,4 @@
 const httpStatus = require('http-status');
-const formidable  = require('formidable')
 //const pick = require('../utils/pick');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -7,13 +6,6 @@ const { sendSuccess, sendError } = require('./return.controller');
 const { authService, tokenService, emailService, accountService, imageService } = require('../services');
 
 const login = catchAsync(async (req, res) => {
-  console.log(req.form)
-  var form = new formidable.IncomingForm();
-  form.parse(req, function (err, fields, files) {
-    // `file` is the name of the <input> field of type `file`
-    console.log(files);
-    console.log(fields);
-  });
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   if (user.status === 400) {

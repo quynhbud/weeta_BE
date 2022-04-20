@@ -11,21 +11,21 @@ const { tokenTypes } = require('../config/tokens');
 const { query } = require('../config/logger');
 const { map, keyBy, isEmpty } = require('lodash');
 
-const createArticle = async (accountId, data) => {
-  console.log(data);
+const createArticle = async (accountId, data, imageURLs) => {
   const article = new Article({
     title: data.title,
     address: data.address,
     price: data.price,
     area: data.area,
     location: {
-      latitude: data.location.latitude,
-      longtitude: data.location.longtitude,
+      latitude: data?.latitude || 0,
+      longitude: data?.longtitude || 0,
     },
     description: data.description,
     vendorId: accountId,
     isApprove: data.isApprove,
     isAvailable: data.isAvailable,
+    image: imageURLs,
   })
   return Article.create(article);
 }

@@ -13,7 +13,7 @@ const getUserById = async (id) => {
 };
 
 const createAccount = async (accountBody) => {
-  console.log(accountBody);
+  
   if (await Account.isEmailTaken(accountBody.email)) {
     return {
       status: 400,

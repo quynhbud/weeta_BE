@@ -15,7 +15,6 @@ const { tokenTypes } = require('../config/tokens');
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await accountService.getAccountByEmail(email);
-  console.log("user", user)
   if (!user || !(await user.isPasswordMatch(password))) {
     return {
       status: 400,

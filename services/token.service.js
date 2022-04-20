@@ -34,7 +34,6 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
 const verifyToken = async (token, type) => {
   const payload = jwt.verify(token, config.jwt.secret);
   const tokenDoc = await Token.findOne({ token, type, user: payload.sub });
-  console.log(payload, tokenDoc);
   if (!tokenDoc) {
     throw new Error('Token not found');
   }
