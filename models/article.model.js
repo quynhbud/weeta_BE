@@ -57,6 +57,6 @@ const ArticleSchema = mongoose.Schema({
     type: Date,
   }
 })
-
+ArticleSchema.index({title: 'text'});
 const Article = mongoose.model('Article', ArticleSchema);
 module.exports = Article;

@@ -120,18 +120,18 @@ const removeVN = (Text) => {
     .replace(/Đ/g, 'D');
 };
 const searchArticle = async (data) => {
-  let searchField = data.keyword;
-  searchField = removeVN(searchField);
-  let keyword = new RegExp(
-    searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
-    'i',
-  );
-  const listArticle = await Article.find();
-  const result = listArticle.map((article) => {
-    if (removeVN(article.title).match(keyword)) {
-      return article;
-    };
-  })
+  const page = data.page * 1 || 1;
+  const limit = data.limit * 1 || 10;
+  const skip = (page - 1) * limit;
+  const articles  = await Article.find({$text: {$search: data}})
+  .skip(skip)
+  .limit(limit)
+  .exec();
+  const totalArticle = await Article.find({$text: {$search: "cong"}}).count();
+  const result = {
+    data: articles,
+    total: totalArticle
+  };
   return result;
 }
 module.exports = {
