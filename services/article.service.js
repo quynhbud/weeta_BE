@@ -40,11 +40,14 @@ const getListArticle = async (data) => {
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
-  const articles = await Article.find(JSON.parse(queryStr))
+  const queryString = JSON.parse(queryStr);
+  queryString.$text =  {$search: "thang"};
+  console.log("queryString", queryString)
+  const articles = await Article.find(queryString)
   .sort({createdAt: "desc"})
   .limit(limit)
   .skip(skip);
-  const totalArticle = await Article.find(JSON.parse(queryStr)).count();
+  const totalArticle = await Article.find(queryString).count();
   const servicePackageIds = map(articles, 'servicePackageId');
   const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
   const objServicePackage = keyBy(servicePackage, '_id');
@@ -120,20 +123,33 @@ const removeVN = (Text) => {
     .replace(/Đ/g, 'D');
 };
 const searchArticle = async (data) => {
-  const page = data.page * 1 || 1;
-  const limit = data.limit * 1 || 10;
+  const page = data?.page * 1 || 1;
+  const limit = data?.limit * 1 || 10;
   const skip = (page - 1) * limit;
-  const articles  = await Article.find({$text: {$search: data}})
+  let searchField = data.keyword;
+  searchField = removeVN(searchField);
+  let keyword = new RegExp(
+    searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+    'i',
+  );
+  const listArticle = await Article.find();
+  const articles  = listArticle.map((article) => {
+    if (removeVN(article.title).match(keyword)) {
+      return article;
+    };
+  })
+  const  articleIds  = map(articles, 'id');
+  const result = await Article.find({_id: {$in : articleIds}})
   .skip(skip)
   .limit(limit)
-  .exec();
-  const totalArticle = await Article.find({$text: {$search: "cong"}}).count();
-  const result = {
-    data: articles,
-    total: totalArticle
+  .exec()
+  const count = await Article.find({_id: {$in : articleIds}}).count()
+  return {
+    listData: result,
+    total: count,
   };
-  return result;
 }
+
 module.exports = {
   createArticle,
   getListArticle,
