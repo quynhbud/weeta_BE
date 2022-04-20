@@ -40,9 +40,7 @@ const getListArticle = async (data) => {
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
-  const queryString = JSON.parse(queryStr);
-  queryString.$text =  {$search: "thang"};
-  console.log("queryString", queryString)
+  const queryString = JSON.parse(queryStr); 
   const articles = await Article.find(queryString)
   .sort({createdAt: "desc"})
   .limit(limit)
