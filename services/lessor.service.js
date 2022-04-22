@@ -27,7 +27,7 @@ const createLessor = async (id) => {
   const lessor = {
     lessorId: id
   } 
-  await Account.updateOne({role: 'LESSOR'});
+  await Account.updateOne({_id: id},{role: 'lessor'});
   return Lessor.create(lessor);
 };
 

@@ -59,13 +59,13 @@ const generateAuthTokens = async (account) => {
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const saveToken = async (token, userId,otp, expires, type) => {
+const saveToken = async (data) => {
   const tokenDoc = await Token.create({
-    token,
-    user: userId,
-    otp: otp,
-    expires: expires.toDate(),
-    type,
+    token: data.token,
+    user:data.user,
+    otp: data.otp,
+    expires: data.expires.toDate(),
+    type: data.type,
   });
   return tokenDoc;
 };
@@ -82,7 +82,13 @@ const generateResetPasswordToken = async (email) => {
   }
   const expires = moment.utc().add(7, 'hours').add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
   const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);
-  await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);
+  const data = {
+    token: resetPasswordToken,
+    user: user.id,
+    expires: expires,
+    type: tokenTypes.RESET_PASSWORD,
+  }
+  await saveToken(data);
   return resetPasswordToken;
 };
 
@@ -93,7 +99,14 @@ const generateVerifyOTPtoken = async (id,otp) => {
   }
   const expires = moment.utc().add(7, 'hours').add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
   const verifyOTPToken = generateToken(id, expires, tokenTypes.VERIFY_OTP);
-  await saveToken(verifyOTPToken,id,otp, expires, tokenTypes.VERIFY_OTP);
+  const data = {
+    token: verifyOTPToken,
+    user: id,
+    otp:otp,
+    expires: expires,
+    type: tokenTypes.VERIFY_OTP,
+  }
+  await saveToken(data);
   return verifyOTPToken;
 };
 
@@ -105,7 +118,13 @@ const generateVerifyOTPtoken = async (id,otp) => {
 const generateVerifyEmailToken = async (account) => {
   const expires = moment.utc().add(7, 'hours').add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
   const verifyEmailToken = generateToken(account.id, expires, tokenTypes.VERIFY_EMAIL);
-  await saveToken(verifyEmailToken, account.id, expires, tokenTypes.VERIFY_EMAIL);
+  const data = {
+    token: verifyEmailToken,
+    user: account.id,
+    expires: expires,
+    type: tokenTypes.VERIFY_EMAIL,
+  }
+  await saveToken(data);
   return verifyEmailToken;
 };
 
