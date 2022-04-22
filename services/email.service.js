@@ -10,12 +10,15 @@ const htmlApprove = require('../constant/approveEmail');
 const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
 if (config.env !== 'test') {
-  transport
-    .verify()
-    .then(() => logger.info('Connected to email server'))
-    .catch((e) =>
-      logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env', e)
-    );
+    transport
+        .verify()
+        .then(() => logger.info('Connected to email server'))
+        .catch((e) =>
+            logger.warn(
+                'Unable to connect to email server. Make sure you have configured the SMTP options in .env',
+                e
+            )
+        );
 }
 
 /**
@@ -26,8 +29,8 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendEmail = async (to, subject, text = '', html = '') => {
-  const msg = { from: config.email.from, to, subject, text, html };
-  await transport.sendMail(msg);
+    const msg = { from: config.email.from, to, subject, text, html };
+    await transport.sendMail(msg);
 };
 
 /**
@@ -37,10 +40,10 @@ const sendEmail = async (to, subject, text = '', html = '') => {
  * @returns {Promise}
  */
 const sendResetPasswordEmail = async (to, token) => {
-  const subject = 'Lấy lại mật khẩu';
-  const resetPasswordUrl = `${config.frontEndUrl}/reset-password?token=${token}`;
-  const html = htmlResetPassword(resetPasswordUrl);
-  await sendEmail(to, subject, '', html);
+    const subject = 'Lấy lại mật khẩu';
+    const resetPasswordUrl = `${config.frontEndUrl}/reset-password?token=${token}`;
+    const html = htmlResetPassword(resetPasswordUrl);
+    await sendEmail(to, subject, '', html);
 };
 
 /**
@@ -50,10 +53,10 @@ const sendResetPasswordEmail = async (to, token) => {
  * @returns {Promise}
  */
 const sendVerificationEmail = async (to, token) => {
-  const subject = 'Xác thực tài khoản';
-  const verificationEmailUrl = `${config.frontEndUrl}/verify-email?token=${token}`;
-  const html = htmlEmailConfirm(verificationEmailUrl);
-  await sendEmail(to, subject, '', html);
+    const subject = 'Xác thực tài khoản';
+    const verificationEmailUrl = `${config.frontEndUrl}/xac-thuc?token=${token}`;
+    const html = htmlEmailConfirm(verificationEmailUrl);
+    await sendEmail(to, subject, '', html);
 };
 
 /**
@@ -62,9 +65,9 @@ const sendVerificationEmail = async (to, token) => {
  * @returns {Promise}
  */
 const sendWelcomeBusinessEmail = async (to) => {
-  const subject = 'Thông báo đăng ký doanh nghiệp';
-  const html = htmlWelcome();
-  await sendEmail(to, subject, '', html);
+    const subject = 'Thông báo đăng ký doanh nghiệp';
+    const html = htmlWelcome();
+    await sendEmail(to, subject, '', html);
 };
 
 /**
@@ -73,10 +76,10 @@ const sendWelcomeBusinessEmail = async (to) => {
  * @returns {Promise}
  */
 const sendApproveBusinessEmail = async (to, token, username) => {
-  const subject = 'Thông báo hợp tác';
-  const accountBusiness = `${config.frontEndUrl}/verify-email?token=${token}`;
-  const html = htmlApprove(accountBusiness, username);
-  await sendEmail(to, subject, '', html);
+    const subject = 'Thông báo hợp tác';
+    const accountBusiness = `${config.frontEndUrl}/xac-thuc?token=${token}`;
+    const html = htmlApprove(accountBusiness, username);
+    await sendEmail(to, subject, '', html);
 };
 
 /**
@@ -85,17 +88,17 @@ const sendApproveBusinessEmail = async (to, token, username) => {
  * @returns {Promise}
  */
 const sendRejectBusinessEmail = async (to) => {
-  const subject = 'Thông báo hợp tác';
-  const html = htmlReject();
-  await sendEmail(to, subject, '', html);
+    const subject = 'Thông báo hợp tác';
+    const html = htmlReject();
+    await sendEmail(to, subject, '', html);
 };
 
 module.exports = {
-  transport,
-  sendEmail,
-  sendResetPasswordEmail,
-  sendVerificationEmail,
-  sendWelcomeBusinessEmail,
-  sendApproveBusinessEmail,
-  sendRejectBusinessEmail,
+    transport,
+    sendEmail,
+    sendResetPasswordEmail,
+    sendVerificationEmail,
+    sendWelcomeBusinessEmail,
+    sendApproveBusinessEmail,
+    sendRejectBusinessEmail,
 };
