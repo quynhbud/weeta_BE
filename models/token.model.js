@@ -16,17 +16,22 @@ const tokenSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: [tokenTypes.REFRESH, tokenTypes.RESET_PASSWORD, tokenTypes.VERIFY_EMAIL],
+      enum: [tokenTypes.REFRESH, tokenTypes.RESET_PASSWORD, tokenTypes.VERIFY_EMAIL, tokenTypes.VERIFY_OTP],
       required: true,
     },
     expires: {
       type: Date,
       required: true,
     },
+    otp: {
+      type: Number,
+      require: false,
+      maxLength: 6,
+    }
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // add plugin that converts mongoose to json

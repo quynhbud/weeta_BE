@@ -59,10 +59,11 @@ const generateAuthTokens = async (account) => {
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const saveToken = async (token, userId, expires, type) => {
+const saveToken = async (token, userId,otp, expires, type) => {
   const tokenDoc = await Token.create({
     token,
     user: userId,
+    otp: otp,
     expires: expires.toDate(),
     type,
   });
@@ -85,6 +86,18 @@ const generateResetPasswordToken = async (email) => {
   return resetPasswordToken;
 };
 
+const generateVerifyOTPtoken = async (id,otp) => {
+  const user = await accountService.getAccountById(id);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No users found');
+  }
+  const expires = moment.utc().add(7, 'hours').add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
+  const verifyOTPToken = generateToken(id, expires, tokenTypes.VERIFY_OTP);
+  console.log("verifyOTPToken", verifyOTPToken)
+  await saveToken(verifyOTPToken,id,otp, expires, tokenTypes.VERIFY_OTP);
+  return verifyOTPToken;
+};
+
 /**
  * Generate verify email token
  * @param {Account} account
@@ -97,10 +110,18 @@ const generateVerifyEmailToken = async (account) => {
   return verifyEmailToken;
 };
 
+const checkOtp = async(token, otp) =>{
+  const tokenOtp = await Token.findOne({token: token});
+  const success = (tokenOtp.otp == Number(otp)) ? true: false;
+  return success;
+}
+
 module.exports = {
+  checkOtp,
   generateToken,
   verifyToken,
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
+  generateVerifyOTPtoken,
 };

@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { random } = require('lodash');
 const { Account, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
-const SendSMSService = require('./sendSMS.service');
+const {SendOTPService} = require('./sendOTP.service');
 
 function generateRandomNumber() {
   var minm = 100000;
@@ -13,26 +13,21 @@ function generateRandomNumber() {
 const identifyPhoneNumber =  async (lessorBody) => {
   const otp = generateRandomNumber();
   const body = {
-    message: `Weeta - ma xac thuc so dien thoai cua ban la: ${otp}`,
+    message: ` OTP của bạn là: ${otp} - Vui lòng không cung cấp OTP này cho người khác`,
     phoneNumber: lessorBody.phoneNumber
   }
-  const sendSMS = await SendSMSService.sendSMS(body);
+  const sendOTP = await SendOTPService.sendSMS(body);
   return {
-    message: sendSMS,
-    otp: otp,
+    message: sendOTP,
+    otp: Number(otp),
   }
 }
 
-const createLessor = async (lessorBody) => {
-  if (!await Account.isPhoneTaken(lessorBody.phoneNumber)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Phone number not already exists');
-  }
-  const account = Account.findOne({phoneNumber: lessorBody.phoneNumber});
+const createLessor = async (id) => {
   const lessor = {
-    lessorId: account._id,
-    memberPackageId:lessorBody.memberPackageId,
+    lessorId: id
   } 
-  await Account.updateOne({phoneNumber:lessorBody.phoneNumber },{role: 'LESSOR'});
+  await Account.updateOne({role: 'LESSOR'});
   return Lessor.create(lessor);
 };
 

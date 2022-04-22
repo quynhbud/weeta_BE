@@ -41,7 +41,7 @@ const sendEmail = async (to, subject, text = '', html = '') => {
  */
 const sendResetPasswordEmail = async (to, token) => {
     const subject = 'Lấy lại mật khẩu';
-    const resetPasswordUrl = `${config.frontEndUrl}/reset-password?token=${token}`;
+    const resetPasswordUrl = `${config.frontEndUrl}/lay-lai-mat-khau?token=${token}`;
     const html = htmlResetPassword(resetPasswordUrl);
     await sendEmail(to, subject, '', html);
 };

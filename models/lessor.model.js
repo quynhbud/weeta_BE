@@ -11,6 +11,7 @@ const LessorSchema = mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'MemberPackage',
     require: false,
+    defauld:'623ebe63be8ccfccc67bd97a',
   },
   articleTotal: {
     type: Number,

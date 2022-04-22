@@ -5,7 +5,7 @@ const lessorController = require('../../controllers/lessor.controller');
 const auth = require('../../middlewares/auth');
 
 const router = express.Router();
-router.post('/identifyPhoneNumber', lessorController.identifyPhoneNumber);
-router.post('/create',  lessorController.createLessor);
+router.post('/identifyPhoneNumber', auth(),lessorController.identifyPhoneNumber);
+router.post('/verifyOtp', auth(), lessorController.createLessor)
 
 module.exports = router;
