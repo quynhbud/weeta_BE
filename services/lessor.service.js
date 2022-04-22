@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { random } = require('lodash');
 const { Account, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
-const {SendOTPService} = require('./sendOTP.service');
+const SendOTPService = require('./sendOTP.service');
 
 function generateRandomNumber() {
   var minm = 100000;
@@ -13,7 +13,7 @@ function generateRandomNumber() {
 const identifyPhoneNumber =  async (lessorBody) => {
   const otp = generateRandomNumber();
   const body = {
-    message: ` OTP của bạn là: ${otp} - Vui lòng không cung cấp OTP này cho người khác`,
+    message: `${otp} là mã OTP của bạn. Vui lòng không cung cấp OTP này cho người khác`,
     phoneNumber: lessorBody.phoneNumber
   }
   const sendOTP = await SendOTPService.sendSMS(body);

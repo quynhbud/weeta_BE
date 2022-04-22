@@ -24,7 +24,6 @@ const getAccount = catchAsync(async(req,res) => {
 });
 
 const getAccountById = catchAsync(async(req,res) => {
-  console.log(req.params.id)
   const accountId = req.params.id;
   const account = await accountService.getAccountById(accountId);
   sendSuccess(res, { account }, httpStatus.CREATED, 'get account successfully');

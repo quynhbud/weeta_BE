@@ -93,7 +93,6 @@ const generateVerifyOTPtoken = async (id,otp) => {
   }
   const expires = moment.utc().add(7, 'hours').add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
   const verifyOTPToken = generateToken(id, expires, tokenTypes.VERIFY_OTP);
-  console.log("verifyOTPToken", verifyOTPToken)
   await saveToken(verifyOTPToken,id,otp, expires, tokenTypes.VERIFY_OTP);
   return verifyOTPToken;
 };

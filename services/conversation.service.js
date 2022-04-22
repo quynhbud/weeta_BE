@@ -8,7 +8,6 @@ const createConversation = async (body) => {
   
   console.log(senderId.localeCompare(receiverId))
   const converId = (senderId.localeCompare(receiverId) === 1) ? (senderId + receiverId) : (receiverId + senderId);
-  console.log("converId", converId)
   const conversation = await Conversation.findOne({
     _id: converId
   })

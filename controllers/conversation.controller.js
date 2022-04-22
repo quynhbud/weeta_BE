@@ -8,7 +8,6 @@ const { sendSuccess, sendError } = require('./return.controller');
 // create conversation
 const createConversation = catchAsync(async (req, res) => {
   const conversation = await conversationService.createConversation(req.body);
-  console.log("conversation", conversation)
   if(!conversation){
     return sendError(res, httpStatus.BAD_REQUEST, 'Create conversation fail');
   }
