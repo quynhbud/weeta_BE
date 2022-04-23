@@ -13,7 +13,11 @@ const { map, keyBy, isEmpty } = require('lodash');
 const Account = require('../models/account.model');
 
 const createArticle = async (accountId, data, imageURLs) => {
-  const article = new Article({
+  const account = await Account.findOne({_id: accountId});
+  if(account.role != 'lessor') {
+    return null;
+  };
+  const dataArticle = new Article({
     title: data.title,
     address: data.address,
     price: data.price,
@@ -24,11 +28,14 @@ const createArticle = async (accountId, data, imageURLs) => {
     },
     description: data.description,
     lessor: accountId,
-    isApprove: data.isApprove,
-    isAvailable: data.isAvailable,
     image: imageURLs,
   })
-  return Article.create(article);
+  const newArticle = await Article.create(dataArticle);
+  if(account.isAutoApproved) {
+     await Article.updateOne({_id: newArticle._id}, {isApproved: true});
+  }
+  const article = await Article.findOne({_id: newArticle._id});
+  return article;
 }
 const getListArticle = async (data) => {
   data.isDelete = false;

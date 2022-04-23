@@ -12,5 +12,5 @@ router.post('/identifyPhoneNumber', auth(),lessorController.identifyPhoneNumber)
 router.post('/verifyOtp', auth(), lessorController.createLessor)
 
 router.get('/articles', auth(), lessorController.getListArticles)
-// router.get('/updoadIDCard', auth(), upload, lessorController.uploadIdCard)
+router.post('/updoadIDCard', auth(), upload, lessorController.uploadIDCard)
 module.exports = router;

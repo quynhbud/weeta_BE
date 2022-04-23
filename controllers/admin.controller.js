@@ -4,10 +4,8 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { AdminService } = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
+const { isEmpty } = require('lodash');
 
-
-
-// get conver of user
 const approvedArticle = catchAsync(async (req, res) => {
   const articleId = req.params.id; //id: articleId
   const article = await AdminService.approvedArticle(articleId);
@@ -16,6 +14,15 @@ const approvedArticle = catchAsync(async (req, res) => {
   }
   sendSuccess(res, article, httpStatus.CREATED, 'approved successfully');
 });
+const approvedIDCard = catchAsync(async(req, res) => {
+  const accountID = req.params.id;
+  const account = await AdminService.approvedIDCard(accountID);
+  if (isEmpty(account)) {
+    return sendError(res, httpStatus.NOT_FOUND, 'approved faild');
+  }
+  sendSuccess(res, account, httpStatus.CREATED, 'approved successfully');
+})
 module.exports = {
   approvedArticle,
+  approvedIDCard
 }

@@ -9,7 +9,10 @@ const { isEmpty } = require('lodash');
 const createArticle = catchAsync(async (req, res) => {
   const imageURLs = await imageService.addMultiImage(req.files)
   const article = await articleService.createArticle(req.user._id,req.body, imageURLs);
-  sendSuccess(res, { article }, httpStatus.CREATED, 'Article created');
+  if(isEmpty(article)) {
+    return sendError(res, httpStatus.BAD_REQUEST, 'Tạo bài đăng thất bại')
+  } 
+  return sendSuccess(res,  article , httpStatus.CREATED, 'Tạo bài đăng thành công');
 });
 
 const createdService = catchAsync(async (req, res) => {

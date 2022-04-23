@@ -16,7 +16,14 @@ const approvedArticle = async (articleId) => {
   return update;
 };
 
+const approvedIDCard = async (accountId) => {
+  const update = await Account.updateOne({_id: accountId},{isAutoApproved: true});
+  const account = await Account.findById(accountId);
+  return account;
+};
+
 
 module.exports = {
-  approvedArticle 
+  approvedArticle,
+  approvedIDCard
 };

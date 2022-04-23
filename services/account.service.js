@@ -146,6 +146,11 @@ const updateAvatar = async (id, avatar) => {
   const account = await Account.findById(id);
   return account;
 }
+const updateIDCard = async (id, IDCard) => {
+  await Account.updateOne({_id: id}, { IDCard: IDCard });
+  const account = await Account.findById(id);
+  return account;
+}
 
 module.exports = {
   getAccount,
@@ -160,4 +165,5 @@ module.exports = {
   checkVerifyEmail,
   checkIsActive,
   updateAccountAccess,
+  updateIDCard,
 };

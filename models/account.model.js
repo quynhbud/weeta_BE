@@ -77,6 +77,14 @@ const AccountSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  isAutoApproved: {
+    type: Boolean,
+    default: false,
+  },
+  IDCard: {
+    type: String,
+    default: '',
+  }
 })
 /**
  * Check if email is taken

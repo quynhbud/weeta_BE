@@ -1,6 +1,6 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { lessorService, tokenService } = require('../services');
+const { lessorService, tokenService, accountService,imageService } = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
 const httpStatus = require('http-status');
 const { isEmpty } = require('lodash');
@@ -29,11 +29,17 @@ const createLessor = catchAsync(async (req, res) => {
 const getListArticles = catchAsync(async (req, res) => {
   const id = req.user._id;
   const query = req.query;
-  const articles = await lessorService.getListArticle({id, ...query});
+  const articles = await lessorService.getListArticle({ id, ...query });
   if (isEmpty(articles)) {
     return sendError(res, httpStatus.BAD_REQUEST, 'Không có bài đăng tin nào')
   }
-  return sendSuccess(res, articles , httpStatus.OK, 'Lấy list thành công')
+  return sendSuccess(res, articles, httpStatus.OK, 'Lấy list thành công')
+})
+const uploadIDCard = catchAsync(async (req, res) => {
+  const id = req.user._id;
+  const image = await imageService.addImage(req.file);
+  const account = await accountService.updateIDCard(id, image.data);
+  sendSuccess(res, account, httpStatus.OK, 'Cập nhật ID Card thành công');
 })
 
 
@@ -43,4 +49,5 @@ module.exports = {
   identifyPhoneNumber,
   getListArticles,
   createLessor,
+  uploadIDCard,
 };
