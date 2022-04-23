@@ -8,11 +8,11 @@ const { isEmpty } = require('lodash');
 
 const createArticle = catchAsync(async (req, res) => {
   const imageURLs = await imageService.addMultiImage(req.files)
-  const article = await articleService.createArticle(req.user._id,req.body, imageURLs);
-  if(isEmpty(article)) {
-    return sendError(res, httpStatus.BAD_REQUEST, 'Tạo bài đăng thất bại')
-  } 
-  return sendSuccess(res,  article , httpStatus.CREATED, 'Tạo bài đăng thành công');
+  const article = await articleService.createArticle(req.user._id, req.body, imageURLs);
+  if (isEmpty(article.data)) {
+    return sendError(res, httpStatus.BAD_REQUEST, article.message)
+  }
+  return sendSuccess(res, article.data, httpStatus.CREATED, article.message);
 });
 
 const createdService = catchAsync(async (req, res) => {
@@ -36,15 +36,23 @@ const getListArticle = catchAsync(async (req, res) => {
 })
 const searchArticle = catchAsync(async (req, res) => {
   const listArticle = await articleService.searchArticle(req.query);
-  sendSuccess(res,  listArticle, httpStatus.OK, 'get list article successfully');
+  sendSuccess(res, listArticle, httpStatus.OK, 'get list article successfully');
 })
 
-const getDetailArticle = catchAsync(async(req, res) => {
+const getDetailArticle = catchAsync(async (req, res) => {
   const article = await articleService.getDetailArticle(req.params);
-  if(isEmpty(article)) {
+  if (isEmpty(article)) {
     return sendError(res, httpStatus.BAD_REQUEST, 'get detail article failed')
   }
-  return sendSuccess(res,  article, httpStatus.OK, 'get detail article successfully');
+  return sendSuccess(res, article, httpStatus.OK, 'get detail article successfully');
+})
+
+const getListTinTop = catchAsync(async (req, res) => {
+  const listArticle = await articleService.getListTinTop(req.query);
+  if (isEmpty(listArticle)) {
+    return sendError(res, httpStatus.BAD_REQUEST, 'get detail article failed')
+  }
+  return sendSuccess(res, listArticle, httpStatus.OK, 'get detail article successfully');
 })
 
 module.exports = {
@@ -55,4 +63,5 @@ module.exports = {
   updateArticle,
   deleteArticle,
   getDetailArticle,
+  getListTinTop,
 }

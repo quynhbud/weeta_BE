@@ -1,22 +1,23 @@
 const httpStatus = require('http-status');
 const dayjs = require('dayjs');
-const tokenService = require('./token.service');
-const accountService = require('./account.service');
-const servicePackage = require('./servicePackage.service');
-const emailService = require('./email.service');
-const { Token, Article, ServicePackage } = require('../models');
-const AppError = require('../utils/appError');
-const APIFeatures = require('../utils/apiFeature');
-const { tokenTypes } = require('../config/tokens');
-const { query } = require('../config/logger');
+const { Article, ServicePackage, Lessor, Account } = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
-const Account = require('../models/account.model');
 
 const createArticle = async (accountId, data, imageURLs) => {
+  const lessor = await Lessor.findOne({lessorId: accountId})
   const account = await Account.findOne({_id: accountId});
   if(account.role != 'lessor') {
-    return null;
+    return {
+      data: null,
+      message: 'Bạn chưa trở thành người cho thuê',
+    }
   };
+  if(lessor.articleTotal === lessor.articleUsed) {
+    return  {
+      data: null,
+      message: 'Bạn không còn lượt đăng tin nào'
+    }
+  }
   const dataArticle = new Article({
     title: data.title,
     address: data.address,
@@ -34,12 +35,18 @@ const createArticle = async (accountId, data, imageURLs) => {
   if(account.isAutoApproved) {
      await Article.updateOne({_id: newArticle._id}, {isApproved: true});
   }
+  const articleUsed = lessor.articleUsed + 1;
+  await Lessor.updateOne({lessorId: accountId} , {articleUsed: articleUsed}); 
   const article = await Article.findOne({_id: newArticle._id});
-  return article;
+  return {
+    data: article,
+    message: "Tạo bài đăng thành công"
+  };
 }
 const getListArticle = async (data) => {
   data.isDelete = false;
   data.isApproved = true;
+  data.servicePackageId = { in: ["623d88663d13700751208a7e", "623d886f3d13700751208a7f"] }
   const page = data.page * 1 || 1;
   const limit = data.limit * 1 || 10;
   const skip = (page - 1) * limit;
@@ -51,6 +58,64 @@ const getListArticle = async (data) => {
   const queryString = JSON.parse(queryStr); 
   const articles = await Article.find(queryString)
   .sort({createdAt: "desc"})
+  .limit(limit)
+  .skip(skip);
+  const totalArticle = await Article.find(queryString).count();
+  const servicePackageIds = map(articles, 'servicePackageId');
+  const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
+  const objServicePackage = keyBy(servicePackage, '_id');
+  const article = articles.map((itm) => {
+    const { servicePackageId } = itm;
+    const servicePackage = objServicePackage[servicePackageId] || {};
+    return {
+      _id: itm._id,
+      title: itm.title,
+      district: itm.district,
+      ward: itm.ward,
+      street: itm.street,
+      location: itm.location,
+      image: itm.image,
+      area: itm.area,
+      description: itm.description,
+      vendorId: itm.vendorId,
+      isApproved: itm.isApproved,
+      isAvailable: itm.isAvailable,
+      createdAt: itm.createdAt,
+      startDate: itm.startDate,
+      endDate: itm.endDate,
+      servicePackageId: itm.servicePackageId,
+      timeService: itm.timeService,
+      price: itm.price,
+      isDelete: itm.isDelete,
+      servicePackageName: servicePackage.serviceName,
+    }
+  })
+  let isOver = false;
+  if(page*limit  >= totalArticle && !isEmpty(article)) {
+    isOver = true;
+  }
+  const result = {
+    data: article,
+    total: totalArticle,
+    isOver: isOver,
+  }
+  return result;
+}
+const getListTinTop = async(data) => {
+  data.isDelete = false;
+  data.isApproved = true;
+  data.servicePackageId = "623d885d3d13700751208a7d"
+  const page = data.page * 1 || 1;
+  const limit = data.limit * 1 || 10;
+  const skip = (page - 1) * limit;
+  const queryObj = data;
+  const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  excludedFields.forEach((el) => delete queryObj[el]);
+  let queryStr = JSON.stringify(queryObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
+  const queryString = JSON.parse(queryStr); 
+  const articles = await Article.find(queryString)
+  .sort({startDate: "desc"})
   .limit(limit)
   .skip(skip);
   const totalArticle = await Article.find(queryString).count();
@@ -176,4 +241,5 @@ module.exports = {
   updateArticle,
   deleteArticle,
   getDetailArticle,
+  getListTinTop,
 };
