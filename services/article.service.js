@@ -4,16 +4,16 @@ const { Article, ServicePackage, Lessor, Account } = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
 
 const createArticle = async (accountId, data, imageURLs) => {
-  const lessor = await Lessor.findOne({lessorId: accountId})
-  const account = await Account.findOne({_id: accountId});
-  if(account.role != 'lessor') {
+  const lessor = await Lessor.findOne({ lessorId: accountId })
+  const account = await Account.findOne({ _id: accountId });
+  if (account.role != 'lessor') {
     return {
       data: null,
       message: 'Bạn chưa trở thành người cho thuê',
     }
   };
-  if(lessor.articleTotal === lessor.articleUsed) {
-    return  {
+  if (lessor.articleTotal === lessor.articleUsed) {
+    return {
       data: null,
       message: 'Bạn không còn lượt đăng tin nào'
     }
@@ -32,12 +32,12 @@ const createArticle = async (accountId, data, imageURLs) => {
     image: imageURLs,
   })
   const newArticle = await Article.create(dataArticle);
-  if(account.isAutoApproved) {
-     await Article.updateOne({_id: newArticle._id}, {isApproved: true});
+  if (account.isAutoApproved) {
+    await Article.updateOne({ _id: newArticle._id }, { isApproved: true });
   }
   const articleUsed = lessor.articleUsed + 1;
-  await Lessor.updateOne({lessorId: accountId} , {articleUsed: articleUsed}); 
-  const article = await Article.findOne({_id: newArticle._id});
+  await Lessor.updateOne({ lessorId: accountId }, { articleUsed: articleUsed });
+  const article = await Article.findOne({ _id: newArticle._id });
   return {
     data: article,
     message: "Tạo bài đăng thành công"
@@ -55,11 +55,11 @@ const getListArticle = async (data) => {
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
-  const queryString = JSON.parse(queryStr); 
+  const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
-  .sort({servicePackageId: 'asc', startDate: 'desc'})
-  .limit(limit)
-  .skip(skip);
+    .sort({ servicePackageId: 'asc', startDate: 'desc' })
+    .limit(limit)
+    .skip(skip);
   const totalArticle = await Article.find(queryString).count();
   const servicePackageIds = map(articles, 'servicePackageId');
   const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
@@ -70,9 +70,7 @@ const getListArticle = async (data) => {
     return {
       _id: itm._id,
       title: itm.title,
-      district: itm.district,
-      ward: itm.ward,
-      street: itm.street,
+      address: itm.street + ', ' + itm.ward + ', ' + itm.district,
       location: itm.location,
       image: itm.image,
       area: itm.area,
@@ -91,7 +89,7 @@ const getListArticle = async (data) => {
     }
   })
   let isOver = false;
-  if(page*limit  >= totalArticle && !isEmpty(article)) {
+  if (page * limit >= totalArticle && !isEmpty(article)) {
     isOver = true;
   }
   const result = {
@@ -101,7 +99,7 @@ const getListArticle = async (data) => {
   }
   return result;
 }
-const getListTinTop = async(data) => {
+const getListTinTop = async (data) => {
   data.isDelete = false;
   data.isApproved = true;
   data.servicePackageId = "623d885d3d13700751208a7d"
@@ -113,11 +111,11 @@ const getListTinTop = async(data) => {
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
-  const queryString = JSON.parse(queryStr); 
+  const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
-  .sort({startDate: "desc"})
-  .limit(limit)
-  .skip(skip);
+    .sort({ startDate: "desc" })
+    .limit(limit)
+    .skip(skip);
   const totalArticle = await Article.find(queryString).count();
   const servicePackageIds = map(articles, 'servicePackageId');
   const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
@@ -149,7 +147,7 @@ const getListTinTop = async(data) => {
     }
   })
   let isOver = false;
-  if(page*limit  >= totalArticle && !isEmpty(article)) {
+  if (page * limit >= totalArticle && !isEmpty(article)) {
     isOver = true;
   }
   const result = {
@@ -187,7 +185,7 @@ const deleteArticle = async (data) => {
   const deleteArticle = await Article.updateOne({ _id: accountId }, { isDelete: true });
   return deleteArticle;
 }
-const getDetailArticle = async(data) => {
+const getDetailArticle = async (data) => {
   const article = await Article.findOne(data);
   const account = await Account.findById(article.lessor);
   return {
@@ -216,17 +214,17 @@ const searchArticle = async (data) => {
     'i',
   );
   const listArticle = await Article.find();
-  const articles  = listArticle.map((article) => {
+  const articles = listArticle.map((article) => {
     if (removeVN(article.title).match(keyword)) {
       return article;
     };
   })
-  const  articleIds  = map(articles, 'id');
-  const result = await Article.find({_id: {$in : articleIds}})
-  .skip(skip)
-  .limit(limit)
-  .exec()
-  const count = await Article.find({_id: {$in : articleIds}}).count()
+  const articleIds = map(articles, 'id');
+  const result = await Article.find({ _id: { $in: articleIds } })
+    .skip(skip)
+    .limit(limit)
+    .exec()
+  const count = await Article.find({ _id: { $in: articleIds } }).count()
   return {
     listData: result,
     total: count,
