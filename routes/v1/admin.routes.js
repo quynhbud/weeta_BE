@@ -1,11 +1,8 @@
 const express = require('express');
-const accountController  = require('../../controllers/account.controller');
-
+const  AdminController = require('../../controllers/admin.controller');
+const auth = require('../../middlewares/auth');
 const router = express.Router();
 
-router.post('/signup',accountController.createAccount);
+router.post('/approvedArticle/:id',auth(), AdminController.approvedArticle )
 
-router.get('/get-account', accountController.getAccount);
-
-router.get('/get-account/:id', accountController.getAccountById);
 module.exports = router;
