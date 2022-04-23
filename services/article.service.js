@@ -57,7 +57,7 @@ const getListArticle = async (data) => {
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
   const queryString = JSON.parse(queryStr); 
   const articles = await Article.find(queryString)
-  .sort({createdAt: "desc"})
+  .sort({servicePackageId: 'asc', startDate: 'desc'})
   .limit(limit)
   .skip(skip);
   const totalArticle = await Article.find(queryString).count();
