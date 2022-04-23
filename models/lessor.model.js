@@ -25,6 +25,10 @@ const LessorSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isAutoApproved: {
+    type: Boolean,
+    default: false,
+  },
   isBan: {
     type: Boolean,
     default: false,

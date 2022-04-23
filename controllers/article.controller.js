@@ -3,7 +3,8 @@ const httpStatus = require('http-status');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { articleService, imageService } = require('../services');
-const { sendSuccess } = require('./return.controller');
+const { sendSuccess, sendError } = require('./return.controller');
+const { isEmpty } = require('lodash');
 
 const createArticle = catchAsync(async (req, res) => {
   const imageURLs = await imageService.addMultiImage(req.files)
@@ -35,6 +36,14 @@ const searchArticle = catchAsync(async (req, res) => {
   sendSuccess(res,  listArticle, httpStatus.OK, 'get list article successfully');
 })
 
+const getDetailArticle = catchAsync(async(req, res) => {
+  const article = await articleService.getDetailArticle(req.params);
+  if(isEmpty(article)) {
+    return sendError(res, httpStatus.BAD_REQUEST, 'get detail article failed')
+  }
+  return sendSuccess(res,  article, httpStatus.OK, 'get detail article successfully');
+})
+
 module.exports = {
   createArticle,
   getListArticle,
@@ -42,4 +51,5 @@ module.exports = {
   searchArticle,
   updateArticle,
   deleteArticle,
+  getDetailArticle,
 }

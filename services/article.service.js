@@ -10,6 +10,7 @@ const APIFeatures = require('../utils/apiFeature');
 const { tokenTypes } = require('../config/tokens');
 const { query } = require('../config/logger');
 const { map, keyBy, isEmpty } = require('lodash');
+const Account = require('../models/account.model');
 
 const createArticle = async (accountId, data, imageURLs) => {
   const article = new Article({
@@ -114,6 +115,18 @@ const deleteArticle = async (data) => {
   const deleteArticle = await Article.updateOne({ _id: accountId }, { isDelete: true });
   return deleteArticle;
 }
+const getDetailArticle = async(data) => {
+  const article = await Article.findOne(data);
+  const account = await Account.findById(article.lessor);
+  return {
+    article,
+    nameLessor: account.fullname,
+    emailLessor: account.email,
+    phoneNumber: account.phoneNumber,
+    avatar: account.avatar,
+  }
+}
+
 const removeVN = (Text) => {
   return Text.normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -155,4 +168,5 @@ module.exports = {
   searchArticle,
   updateArticle,
   deleteArticle,
+  getDetailArticle,
 };
