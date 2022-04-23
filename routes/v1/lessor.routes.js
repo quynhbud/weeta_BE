@@ -8,4 +8,5 @@ const router = express.Router();
 router.post('/identifyPhoneNumber', auth(),lessorController.identifyPhoneNumber);
 router.post('/verifyOtp', auth(), lessorController.createLessor)
 
+router.get('/articles', auth(), lessorController.getListArticles)
 module.exports = router;

@@ -20,9 +20,9 @@ const ArticleSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  lessorId: {
+  lessor: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Lessor',
+    ref: 'Account',
   },
   isApproved: {
     type: Boolean,

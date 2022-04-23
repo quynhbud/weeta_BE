@@ -22,7 +22,7 @@ const createArticle = async (accountId, data, imageURLs) => {
       longitude: data?.longtitude || 0,
     },
     description: data.description,
-    vendorId: accountId,
+    lessor: accountId,
     isApprove: data.isApprove,
     isAvailable: data.isAvailable,
     image: imageURLs,
