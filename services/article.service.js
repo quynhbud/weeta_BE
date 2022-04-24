@@ -5,19 +5,19 @@ const { map, keyBy, isEmpty } = require('lodash');
 const moment = require('moment');
 
 const createArticle = async (accountId, data, imageURLs) => {
-  const lessor = await Lessor.findOne({ lessorId: accountId })
+  const lessor = await Lessor.findOne({ lessorId: accountId });
   const account = await Account.findOne({ _id: accountId });
   if (account.role != 'lessor') {
     return {
       data: null,
       message: 'Bạn chưa trở thành người cho thuê',
-    }
-  };
+    };
+  }
   if (lessor.articleTotal === lessor.articleUsed) {
     return {
       data: null,
-      message: 'Bạn không còn lượt đăng tin nào'
-    }
+      message: 'Bạn không còn lượt đăng tin nào',
+    };
   }
   const dataArticle = new Article({
     title: data.title,
@@ -31,23 +31,28 @@ const createArticle = async (accountId, data, imageURLs) => {
     description: data.description,
     lessor: accountId,
     image: imageURLs,
-  })
+  });
   const newArticle = await Article.create(dataArticle);
   if (account.isAutoApproved) {
     await Article.updateOne({ _id: newArticle._id }, { isApproved: true });
   }
   const articleUsed = lessor.articleUsed + 1;
-  await Lessor.updateOne({ lessorId: accountId }, { articleUsed: articleUsed });
+  await Lessor.updateOne(
+    { lessorId: accountId },
+    { articleUsed: articleUsed }
+  );
   const article = await Article.findOne({ _id: newArticle._id });
   return {
     data: article,
-    message: "Tạo bài đăng thành công"
+    message: 'Tạo bài đăng thành công',
   };
-}
+};
 const getListArticle = async (data) => {
   data.isDelete = false;
   data.isApproved = true;
-  data.servicePackageId = { in: ["623d88663d13700751208a7e", "623d886f3d13700751208a7f"] }
+  data.servicePackageId = {
+    in: ['623d88663d13700751208a7e', '623d886f3d13700751208a7f'],
+  };
   const page = data.page * 1 || 1;
   const limit = data.limit * 1 || 10;
   const skip = (page - 1) * limit;
@@ -55,15 +60,20 @@ const getListArticle = async (data) => {
   const excludedFields = ['page', 'sort', 'limit', 'fields'];
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
+  queryStr = queryStr.replace(
+    /\b(gte|gt|lt|lte|in|regex|option)\b/g,
+    (match) => `$${match}`
+  );
   const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
-    .sort({ servicePackageId: 'asc', startDateService: 'desc' })
+    .sort({ servicePackageId: 'asc', startDate: 'desc' })
     .limit(limit)
     .skip(skip);
   const totalArticle = await Article.find(queryString).count();
   const servicePackageIds = map(articles, 'servicePackageId');
-  const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
+  const servicePackage = await ServicePackage.find({
+    _id: { $in: servicePackageIds },
+  });
   const objServicePackage = keyBy(servicePackage, '_id');
   const article = articles.map((itm) => {
     const { servicePackageId } = itm;
@@ -87,8 +97,8 @@ const getListArticle = async (data) => {
       price: itm.price,
       isDelete: itm.isDelete,
       servicePackageName: servicePackage.serviceName,
-    }
-  })
+    };
+  });
   let isOver = false;
   if (page * limit >= totalArticle && !isEmpty(article)) {
     isOver = true;
@@ -97,13 +107,13 @@ const getListArticle = async (data) => {
     data: article,
     total: totalArticle,
     isOver: isOver,
-  }
+  };
   return result;
-}
+};
 const getListTinTop = async (data) => {
   data.isDelete = false;
   data.isApproved = true;
-  data.servicePackageId = "623d885d3d13700751208a7d"
+  data.servicePackageId = '623d885d3d13700751208a7d';
   const page = data.page * 1 || 1;
   const limit = data.limit * 1 || 10;
   const skip = (page - 1) * limit;
@@ -111,15 +121,20 @@ const getListTinTop = async (data) => {
   const excludedFields = ['page', 'sort', 'limit', 'fields'];
   excludedFields.forEach((el) => delete queryObj[el]);
   let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
+  queryStr = queryStr.replace(
+    /\b(gte|gt|lt|lte|in|regex|option)\b/g,
+    (match) => `$${match}`
+  );
   const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
-    .sort({ startDate: "desc" })
+    .sort({ startDate: 'desc' })
     .limit(limit)
     .skip(skip);
   const totalArticle = await Article.find(queryString).count();
   const servicePackageIds = map(articles, 'servicePackageId');
-  const servicePackage = await ServicePackage.find({ _id: { $in: servicePackageIds } });
+  const servicePackage = await ServicePackage.find({
+    _id: { $in: servicePackageIds },
+  });
   const objServicePackage = keyBy(servicePackage, '_id');
   const article = articles.map((itm) => {
     const { servicePackageId } = itm;
@@ -145,8 +160,8 @@ const getListTinTop = async (data) => {
       price: itm.price,
       isDelete: itm.isDelete,
       servicePackageName: servicePackage.serviceName,
-    }
-  })
+    };
+  });
   let isOver = false;
   if (page * limit >= totalArticle && !isEmpty(article)) {
     isOver = true;
@@ -155,9 +170,9 @@ const getListTinTop = async (data) => {
     data: article,
     total: totalArticle,
     isOver: isOver,
-  }
+  };
   return result;
-}
+};
 
 const createService = async (accountId, data) => {
   const serivce = new Article({
@@ -173,30 +188,28 @@ const createService = async (accountId, data) => {
     vendorId: accountId,
     isApprove: data.isApprove,
     isAvailable: data.isAvailable,
-  })
+  });
   return Article.create(article);
-}
+};
 const updateArticle = async (data) => {
   const article = await Article.findById(data.articleId);
   const updateArticle = await Article.updateOne({ _id: accountId }, data);
   return updateArticle;
-}
+};
 const deleteArticle = async (data) => {
   const article = await Article.findById(data.articleId);
-  const deleteArticle = await Article.updateOne({ _id: accountId }, { isDelete: true });
+  const deleteArticle = await Article.updateOne(
+    { _id: accountId },
+    { isDelete: true }
+  );
   return deleteArticle;
-}
+};
 const getDetailArticle = async (data) => {
-  const article = await Article.findOne(data);
-  const account = await Account.findById(article.lessor);
-  return {
-    article,
-    nameLessor: account.fullname,
-    emailLessor: account.email,
-    phoneNumber: account.phoneNumber,
-    avatar: account.avatar,
-  }
-}
+  return await Article.findOne(data).populate(
+    'lessor',
+    '_id fullname email phoneNumber avatar'
+  );
+};
 
 const removeVN = (Text) => {
   return Text.normalize('NFD')
@@ -212,48 +225,48 @@ const searchArticle = async (data) => {
   searchField = removeVN(searchField);
   let keyword = new RegExp(
     searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
-    'i',
+    'i'
   );
   const listArticle = await Article.find();
   const articles = listArticle.map((article) => {
     if (removeVN(article.title).match(keyword)) {
       return article;
-    };
-  })
+    }
+  });
   const articleIds = map(articles, 'id');
   const result = await Article.find({ _id: { $in: articleIds } })
     .skip(skip)
     .limit(limit)
-    .exec()
-  const count = await Article.find({ _id: { $in: articleIds } }).count()
+    .exec();
+  const count = await Article.find({ _id: { $in: articleIds } }).count();
   return {
     listData: result,
     total: count,
   };
 }
+
 const updateServicePackage = async (data) => {
   const currentTime = new Date();
   const article = await Article.findById(data.articleId);
   const numOfDate = moment(article.endDate)
-  .endOf('day').diff(moment(currentTime).startOf('day'), 'day');
-  if(data.numOfDate > numOfDate) {
+    .endOf('day').diff(moment(currentTime).startOf('day'), 'day');
+  if (data.numOfDate > numOfDate) {
     return {
       data: [],
       message: 'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng'
     }
   }
-  const updateData  = {
+  const updateData = {
     startDateService: currentTime,
     endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
     servicePackageId: data.servicePackageId,
   }
-  await Article.updateOne({_id: data.articleId}, updateData);
+  await Article.updateOne({ _id: data.articleId }, updateData);
   const updatedArticle = await Article.findById(data.articleId);
   return {
     data: updatedArticle,
     message: 'Cập nhật gói dịch vụ cho bài đăng thành công'
   }
-
 }
 
 module.exports = {
