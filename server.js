@@ -4,7 +4,7 @@ const config = require('./config/config');
 const logger = require('./config/logger');
 const Socket = require('./socket');
 let server = require('http').Server(app)
-const schedule = require('./services/schedule.service')
+//const schedule = require('./services/schedule.service')
 const io = require('socket.io')(server, {
   cors: {
     origin: "*",
