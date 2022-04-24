@@ -207,7 +207,7 @@ const deleteArticle = async (data) => {
 const getDetailArticle = async (data) => {
   return await Article.findOne(data).populate(
     'lessor',
-    '_id fullname email phoneNumber avatar'
+    '_id fullname email phoneNumber avatar createdAt isAutoApproved'
   );
 };
 
