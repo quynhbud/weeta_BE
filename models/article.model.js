@@ -36,7 +36,7 @@ const ArticleSchema = mongoose.Schema({
     type: Date,
     default: Date.now()
   },
-  startDate: {
+  startDateService: {
     type: Date,
   },
   endDate: {
@@ -46,8 +46,8 @@ const ArticleSchema = mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'ServicePackage',
   },
-  timeService: {
-    type: Number,
+  endDateService: {
+    type: Date,
   },
   isDelete:{
     type: Boolean,

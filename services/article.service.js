@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const dayjs = require('dayjs');
 const { Article, ServicePackage, Lessor, Account } = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
+const moment = require('moment');
 
 const createArticle = async (accountId, data, imageURLs) => {
   const lessor = await Lessor.findOne({ lessorId: accountId })
@@ -57,7 +58,7 @@ const getListArticle = async (data) => {
   queryStr = queryStr.replace(/\b(gte|gt|lt|lte|in|regex|option)\b/g, (match) => `$${match}`);
   const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
-    .sort({ servicePackageId: 'asc', startDate: 'desc' })
+    .sort({ servicePackageId: 'asc', startDateService: 'desc' })
     .limit(limit)
     .skip(skip);
   const totalArticle = await Article.find(queryString).count();
@@ -230,6 +231,30 @@ const searchArticle = async (data) => {
     total: count,
   };
 }
+const updateServicePackage = async (data) => {
+  const currentTime = new Date();
+  const article = await Article.findById(data.articleId);
+  const numOfDate = moment(article.endDate)
+  .endOf('day').diff(moment(currentTime).startOf('day'), 'day');
+  if(data.numOfDate > numOfDate) {
+    return {
+      data: [],
+      message: 'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng'
+    }
+  }
+  const updateData  = {
+    startDateService: currentTime,
+    endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
+    servicePackageId: data.servicePackageId,
+  }
+  await Article.updateOne({_id: data.articleId}, updateData);
+  const updatedArticle = await Article.findById(data.articleId);
+  return {
+    data: updatedArticle,
+    message: 'Cập nhật gói dịch vụ cho bài đăng thành công'
+  }
+
+}
 
 module.exports = {
   createArticle,
@@ -240,4 +265,5 @@ module.exports = {
   deleteArticle,
   getDetailArticle,
   getListTinTop,
+  updateServicePackage,
 };

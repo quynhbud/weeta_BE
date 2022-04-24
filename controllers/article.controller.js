@@ -52,7 +52,15 @@ const getListTinTop = catchAsync(async (req, res) => {
   if (isEmpty(listArticle)) {
     return sendError(res, httpStatus.BAD_REQUEST, 'get detail article failed')
   }
-  return sendSuccess(res, listArticle, httpStatus.OK, 'get detail article successfully');
+  return sendSuccess(res, listArticle, httpStatus.OK, ' successfully');
+})
+
+const updateServicePackage = catchAsync(async (req, res) => {
+  const article = await articleService.updateServicePackage(req.body);
+  if(isEmpty(article.data)) {
+    return sendError(res, httpStatus.BAD_REQUEST, article.message)
+  }
+  return sendSuccess(res, article.data, httpStatus.OK, article.message);
 })
 
 module.exports = {
@@ -64,4 +72,5 @@ module.exports = {
   deleteArticle,
   getDetailArticle,
   getListTinTop,
+  updateServicePackage,
 }
