@@ -38,7 +38,7 @@ const getListArticle = async (data) => {
     const skip = (currentPage - 1) * currentLimit;
     const articles = await Article.find({
         lessor: id,
-        title: { $regex: keyword, $options: 'i' },
+        title: { $regex: keyword || '', $options: 'i' },
         ...rest,
     })
         .skip(skip)
@@ -46,7 +46,7 @@ const getListArticle = async (data) => {
         .exec();
     const total = await Article.find({
         lessor: id,
-        title: { $regex: keyword, $options: 'i' },
+        title: { $regex: keyword || '', $options: 'i' },
         ...rest,
     }).count();
     return {
