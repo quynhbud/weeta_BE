@@ -157,11 +157,11 @@ const getProfile = async (data) => {
     const lessor = await Lessor.findOne({ lessorId: data._id });
     delete lessor.account;
     return {
-      ...userData,
+      ...data._doc,
       ...lessor._doc
     };
   }
-  return userData;
+  return data;
 }
 
 module.exports = {

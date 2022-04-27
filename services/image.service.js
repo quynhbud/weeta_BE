@@ -44,6 +44,12 @@ const addImage = async(file) => {
 const addMultiImage = async(files) => {
     let imageULRs = [];
     try {
+        if(files.length > 10) {
+            return {
+                status: 400,
+                msg: "Không quá 10 hình ảnh"
+            }
+        }
         files.map((file) => {
             if(!file) {
                 return {
