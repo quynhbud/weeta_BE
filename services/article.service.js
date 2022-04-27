@@ -192,20 +192,19 @@ const createService = async (accountId, data) => {
     return Article.create(article);
 };
 const updateArticle = async (data) => {
-    const article = await Article.findById(data.articleId);
-    const updateArticle = await Article.updateOne({ _id: accountId }, data);
+    const updateArticle = await Article.updateOne({ _id: data.articleId }, data);
     return updateArticle;
 };
 const deleteArticle = async (data) => {
-    const article = await Article.findById(data.articleId);
     const deleteArticle = await Article.updateOne(
-        { _id: accountId },
+        { _id: data.articleId },
         { isDelete: true }
     );
     return deleteArticle;
 };
 const getDetailArticle = async (data) => {
-    const result = await Article.findOne(data).populate(
+    const articleId = data.articleId;
+    const result = await Article.findOne({_id:articleId}).populate(
         'lessor',
         '_id fullname email phoneNumber avatar createdAt isAutoApproved'
     );
