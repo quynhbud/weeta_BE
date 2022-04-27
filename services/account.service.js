@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Account } = require('../models/index');
+const { Account, User, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
 
 /**
@@ -13,7 +13,7 @@ const getUserById = async (id) => {
 };
 
 const createAccount = async (accountBody) => {
-  
+
   if (await Account.isEmailTaken(accountBody.email)) {
     return {
       status: 400,
@@ -142,14 +142,26 @@ const deleteAccountById = async (userId) => {
   return user;
 };
 const updateAvatar = async (id, avatar) => {
-  await Account.updateOne({_id: id}, { avatar: avatar });
+  await Account.updateOne({ _id: id }, { avatar: avatar });
   const account = await Account.findById(id);
   return account;
 }
 const updateIDCard = async (id, IDCard) => {
-  await Account.updateOne({_id: id}, { IDCard: IDCard });
+  await Account.updateOne({ _id: id }, { IDCard: IDCard });
   const account = await Account.findById(id);
   return account;
+}
+
+const getProfile = async (data) => {
+  if (data.role === 'lessor') {
+    const lessor = await Lessor.findOne({ lessorId: data._id });
+    delete lessor.account;
+    return {
+      ...userData,
+      ...lessor._doc
+    };
+  }
+  return userData;
 }
 
 module.exports = {
@@ -166,4 +178,5 @@ module.exports = {
   checkIsActive,
   updateAccountAccess,
   updateIDCard,
+  getProfile,
 };

@@ -89,6 +89,12 @@ const AccountSchema = mongoose.Schema(
             type: String,
             default: '',
         },
+        saveArticle: [
+            {
+                type: mongoose.SchemaTypes.ObjectId,
+                ref: 'Article',
+            },
+        ],
     },
     {
         timestamps: true,

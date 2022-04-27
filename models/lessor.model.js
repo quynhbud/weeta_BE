@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const LessorSchema = mongoose.Schema(
     {
-        lessorId: {
+        account: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'Account',
             require: false,

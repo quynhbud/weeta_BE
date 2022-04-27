@@ -54,8 +54,8 @@ const changePassword = catchAsync(async (req, res) => {
     sendSuccess(res, {}, httpStatus.OK, 'Cập nhật thành công');
 });
 const getProfile = catchAsync(async (req, res) => {
-    const profile = req.user;
-    profile.password = undefined;
+    const user = req.user;
+    const profile = await accountService.getProfile(user);
     sendSuccess(res, profile, httpStatus.OK, 'Lấy thông tin thành công');
 });
 const updateProfile = catchAsync(async (req, res) => {
