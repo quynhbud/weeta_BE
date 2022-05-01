@@ -17,11 +17,12 @@ const createMessage = catchAsync(async (req, res) => {
 //get message in conversation
 const getMessage = catchAsync(async (req, res) => {
   const conversationId =  req.params.conversationId;
-  const message = await messageService.getMessage({conversationId});
+  console.log("conversationId", conversationId)
+  const message = await messageService.getMessage(req.query,conversationId);
   if(!message){
-    return sendError(res, httpStatus.BAD_REQUEST, 'Get message fail');
+    return sendError(res, httpStatus.BAD_REQUEST, 'Không có tin nhắn nào');
   }
-  sendSuccess(res, message, httpStatus.CREATED, 'Get message created');
+  sendSuccess(res, message, httpStatus.OK, 'Lấy danh sách tin nhắn thành công');
 });
 
 module.exports = {

@@ -1,15 +1,28 @@
 const mongoose = require('mongoose');
 
-const ConversationSchema =  new mongoose.Schema(
+const ConversationSchema = new mongoose.Schema(
   {
     _id: {
       type: String,
     },
-    members: {
-      type: Array,
+    conversationName: {
+      type: String,
     },
+    members: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Account'
+      }
+    ],
+    latestMessage: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Message',
+    },
+    amountOfNotSeenMess: {
+      type: Number,
+    }
   },
-  {timestamps: true}
+  { timestamps: true }
 );
 const Conversation = mongoose.model('conversation', ConversationSchema);
 module.exports = Conversation;

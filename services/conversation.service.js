@@ -35,8 +35,8 @@ const getListConversations = async (data, accounId) => {
   const limit = data.limit || 10;
   const skip = (page - 1) * limit;
   const conversations = await Conversation.find({
-    members: { $in: [accounId.toString()] }
-  })
+    members: { $in: accounId }
+  }).populate ('members','_id fullname avatar')
     .skip(skip)
     .limit(limit)
     .exec();
