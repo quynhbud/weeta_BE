@@ -4,6 +4,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const { conversationService } = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
+const { isEmpty } = require('lodash');
 
 // create conversation
 const createConversation = catchAsync(async (req, res) => {
@@ -23,7 +24,18 @@ const getConversation = catchAsync(async (req, res) => {
   }
   sendSuccess(res, conversation, httpStatus.CREATED, 'get conversation successfully');
 });
+
+const getListConversations = catchAsync(async (req, res) => {
+  const accountId =[req.user._id];
+  const query = req.query;
+  const result = await conversationService.getListConversations(query, accountId);
+  if(isEmpty(result.data)) {
+    return sendError(res, httpStatus.BAD_REQUEST, 'Không có cuộc hội thoại nào');
+  }
+  return sendSuccess(res, result, httpStatus.OK, 'Lấy danh sách cuộc hội thoại thành công');
+})
 module.exports = {
   createConversation,
-  getConversation
+  getConversation,
+  getListConversations
 }
