@@ -100,7 +100,7 @@ const getListArticle = async (data) => {
         };
     });
     let isOver = false;
-    if (page * limit >= totalArticle && !isEmpty(article)) {
+    if (page * limit >= totalArticle || isEmpty(article)) {
         isOver = true;
     }
     const result = {
@@ -163,7 +163,7 @@ const getListTinTop = async (data) => {
         };
     });
     let isOver = false;
-    if (page * limit >= totalArticle && !isEmpty(article)) {
+    if (page * limit >= totalArticle || isEmpty(article)) {
         isOver = true;
     }
     const result = {
@@ -192,7 +192,10 @@ const createService = async (accountId, data) => {
     return Article.create(article);
 };
 const updateArticle = async (data) => {
-    const updateArticle = await Article.updateOne({ _id: data.articleId }, data);
+    const updateArticle = await Article.updateOne(
+        { _id: data.articleId },
+        data
+    );
     return updateArticle;
 };
 const deleteArticle = async (data) => {
@@ -204,7 +207,7 @@ const deleteArticle = async (data) => {
 };
 const getDetailArticle = async (data) => {
     const articleId = data.articleId;
-    const result = await Article.findOne({_id:articleId}).populate(
+    const result = await Article.findOne({ _id: articleId }).populate(
         'lessor',
         '_id fullname email phoneNumber avatar createdAt isAutoApproved'
     );
