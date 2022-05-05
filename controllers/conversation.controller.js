@@ -34,8 +34,17 @@ const getListConversations = catchAsync(async (req, res) => {
   }
   return sendSuccess(res, result, httpStatus.OK, 'Lấy danh sách cuộc hội thoại thành công');
 })
+
+const searchConversations = catchAsync (async (req, res) => {
+  const result = await conversationService.searchConversations(req.query);
+  if(isEmpty(result)) {
+    return sendError(res, httpStatus.BAD_REQUEST, "Không tìm thấy cuộc hội thoại nào");
+  }
+  return sendSuccess(res,result, httpStatus.OK, 'Tìm kiếm cuộc hội thoại thành công' )
+})
 module.exports = {
   createConversation,
   getConversation,
-  getListConversations
+  getListConversations,
+  searchConversations
 }

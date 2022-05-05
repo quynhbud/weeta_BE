@@ -12,9 +12,13 @@ const MessageSchema =  new mongoose.Schema(
     text: {
       type: String,
     },
-    status: {
+    isSeen: {
       type: Boolean,
     },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    }
     
   },
   {timestamps: true}
