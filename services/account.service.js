@@ -9,30 +9,29 @@ const AppError = require('../utils/appError');
  */
 
 const getUserById = async (id) => {
-  return Account.findById(id);
+    return Account.findById(id);
 };
 
 const createAccount = async (accountBody) => {
-
-  if (await Account.isEmailTaken(accountBody.email)) {
-    return {
-      status: 400,
-      message: 'Email already exists'
+    if (await Account.isEmailTaken(accountBody.email)) {
+        return {
+            status: 400,
+            message: 'Email already exists',
+        };
     }
-  }
-  if (await Account.usernameExists(accountBody.username)) {
-    return {
-      status: 400,
-      message: 'Username already exists'
+    if (await Account.usernameExists(accountBody.username)) {
+        return {
+            status: 400,
+            message: 'Username already exists',
+        };
     }
-  }
-  if (await Account.isPhoneTaken(accountBody.phoneNumber)) {
-    return {
-      status: 400,
-      message: 'Phone number already exists'
+    if (await Account.isPhoneTaken(accountBody.phoneNumber)) {
+        return {
+            status: 400,
+            message: 'Phone number already exists',
+        };
     }
-  }
-  return Account.create(accountBody);
+    return Account.create(accountBody);
 };
 
 /**
@@ -45,8 +44,8 @@ const createAccount = async (accountBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryAccounts = async (filter, options) => {
-  const users = await Account.paginate(filter, options);
-  return users;
+    const users = await Account.paginate(filter, options);
+    return users;
 };
 
 /**
@@ -55,19 +54,19 @@ const queryAccounts = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getAccountById = async (id) => {
-  return Account.findById(id);
+    return Account.findById(id);
 };
 
 const checkVerifyEmail = async (id) => {
-  const user = await getUserById(id);
-  const { isEmailVerified } = user;
-  return isEmailVerified;
+    const user = await getUserById(id);
+    const { isEmailVerified } = user;
+    return isEmailVerified;
 };
 
 const checkIsActive = async (id) => {
-  const user = await getUserById(id);
-  const { isActive } = user;
-  return isActive;
+    const user = await getUserById(id);
+    const { isActive } = user;
+    return isActive;
 };
 
 /**
@@ -76,12 +75,12 @@ const checkIsActive = async (id) => {
  * @returns {Promise<User>}
  */
 const getAccountByEmail = async (email) => {
-  return Account.findOne({ email: email });
+    return Account.findOne({ email: email });
 };
 
 const getAccount = async () => {
-  return Account.find();
-}
+    return Account.find();
+};
 
 /**
  * Update user by id
@@ -90,42 +89,48 @@ const getAccount = async () => {
  * @returns {Promise<User>}
  */
 const updateAccountById = async (accountId, updateBody) => {
-  const account = await getUserById(accountId);
-  if (!account) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Account not found');
-  }
-  if (updateBody.email && (await Account.isEmailTaken(updateBody.email, accountId))) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  if (await Account.usernameExists(updateBody.username, accountId)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Username already exists');
-  }
-  if (await Account.isPhoneTaken(updateBody.phoneNumber, accountId)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Phone number already exists');
-  }
-  Object.assign(account, updateBody);
-  await account.save();
-  return account;
+    const account = await getUserById(accountId);
+    if (!account) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Account not found');
+    }
+    if (
+        updateBody.email &&
+        (await Account.isEmailTaken(updateBody.email, accountId))
+    ) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Email already taken');
+    }
+    if (await Account.usernameExists(updateBody.username, accountId)) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Username already exists');
+    }
+    if (await Account.isPhoneTaken(updateBody.phoneNumber, accountId)) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Phone number already exists'
+        );
+    }
+    Object.assign(account, updateBody);
+    await account.save();
+    return account;
 };
 
 const updateAccountAccess = async (userId) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Không tìm thấy người dùng');
-  }
-  Object.assign(user, { isActive: !user.isActive });
-  await user.save();
-  return user;
+    const user = await getUserById(userId);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Không tìm thấy người dùng');
+    }
+    Object.assign(user, { isActive: !user.isActive });
+    await user.save();
+    return user;
 };
 
 const updateAccountAvatarById = async (userId, avatar) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-  user.avatar = avatar;
-  await user.save();
-  return user;
+    const user = await getUserById(userId);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+    }
+    user.avatar = avatar;
+    await user.save();
+    return user;
 };
 
 /**
@@ -134,50 +139,51 @@ const updateAccountAvatarById = async (userId, avatar) => {
  * @returns {Promise<User>}
  */
 const deleteAccountById = async (userId) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-  await user.remove();
-  return user;
+    const user = await getUserById(userId);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+    }
+    await user.remove();
+    return user;
 };
 const updateAvatar = async (id, avatar) => {
-  await Account.updateOne({ _id: id }, { avatar: avatar });
-  const account = await Account.findById(id);
-  return account;
-}
+    await Account.updateOne({ _id: id }, { avatar: avatar });
+    const account = await Account.findById(id);
+    return account;
+};
 const updateIDCard = async (id, IDCard) => {
-  await Account.updateOne({ _id: id }, { IDCard: IDCard });
-  const account = await Account.findById(id);
-  return account;
-}
+    await Account.updateOne({ _id: id }, { IDCard: IDCard });
+    const account = await Account.findById(id);
+    return account;
+};
 
 const getProfile = async (data) => {
-  data.password = undefined;
-  if (data.role === 'lessor') {
-    const lessor = await Lessor.findOne({ lessorId: data._id });
-    delete lessor.account;
-    return {
-      ...data._doc,
-      ...lessor._doc
-    };
-  }
-  return data;
-}
+    data.password = undefined;
+    if (data.role === 'lessor') {
+        const lessor = await Lessor.findOne({ lessorId: data._id });
+        delete lessor.account;
+        return {
+            lessorId: lessor._id,
+            ...lessor._doc,
+            ...data._doc,
+        };
+    }
+    return data;
+};
 
 module.exports = {
-  getAccount,
-  createAccount,
-  queryAccounts,
-  getAccountById,
-  getAccountByEmail,
-  updateAccountById,
-  updateAvatar,
-  updateAccountAvatarById,
-  deleteAccountById,
-  checkVerifyEmail,
-  checkIsActive,
-  updateAccountAccess,
-  updateIDCard,
-  getProfile,
+    getAccount,
+    createAccount,
+    queryAccounts,
+    getAccountById,
+    getAccountByEmail,
+    updateAccountById,
+    updateAvatar,
+    updateAccountAvatarById,
+    deleteAccountById,
+    checkVerifyEmail,
+    checkIsActive,
+    updateAccountAccess,
+    updateIDCard,
+    getProfile,
 };

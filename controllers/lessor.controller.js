@@ -13,7 +13,7 @@ const { isEmpty } = require('lodash');
 const identifyPhoneNumber = catchAsync(async (req, res) => {
     const id = req.user._id;
     const identify = await lessorService.identifyPhoneNumber(req.body);
-    const verifyOTPToken = await tokenService.generateVerifyOTPtoken(
+    const verifyOTPToken = await tokenService.generateVerifyOTPToken(
         id,
         identify.otp
     );
