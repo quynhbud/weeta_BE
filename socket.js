@@ -1,5 +1,5 @@
-const SocketHandler = require('./sockets/handlers')
-const jwt = require('jsonwebtoken')
+const SocketHandler = require('./sockets/handlers');
+const jwt = require('jsonwebtoken');
 
 function Socket(io) {
     // constructor
@@ -13,20 +13,19 @@ function Socket(io) {
     //         });
     //     }
     // })
-    io.on("connection", (socket) => {
-        console.log(`-(${socket.id})` + " is connected");
-        Object.keys(SocketHandler).forEach(e => {
-            registerEventHandler(SocketHandler[e](socket), socket)
-        })
-        socket.on("disconnect", async () => {
+    io.on('connection', (socket) => {
+        // console.log(`-(${socket.id})` + " is connected");
+        Object.keys(SocketHandler).forEach((e) => {
+            registerEventHandler(SocketHandler[e](socket), socket);
         });
-        socket.on("connect_error", (err) => {
+        socket.on('disconnect', async () => {});
+        socket.on('connect_error', (err) => {
             console.log(`connect_error due to ${err.message}`);
         });
     });
 }
 function registerEventHandler(handler, socket) {
-    console.log("handle", handler)
+    // console.log("handle", handler)
     Object.keys(handler).forEach((eventName) => {
         socket.on(eventName, handler[eventName]);
     });

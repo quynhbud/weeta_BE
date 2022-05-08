@@ -14,6 +14,7 @@ const getMessage = async (data, conversationId) => {
     const messages = await Message.find({ conversation: conversationId })
         .skip(skip)
         .limit(limit)
+        .sort({ createdAt: 'desc' })
         .exec();
     const totalMessage = await Message.find({
         conversation: conversationId,
