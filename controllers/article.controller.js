@@ -55,6 +55,23 @@ const getListTinTop = catchAsync(async (req, res) => {
   return sendSuccess(res, listArticle, httpStatus.OK, ' successfully');
 })
 
+const paymentServicePackage = catchAsync(async (req, res) => {
+  const lessorId = req.user._id;
+  const result = await articleService.paymentServicePackage(req,lessorId,req.body);
+  if(result.status != 200) {
+    return sendError (res, result.status, result.message);
+  }
+  return sendSuccess(res, result.data, result.status, result.message);
+})
+
+const savePaymentResult = catchAsync(async (req, res) => {
+  const result = await articleService.savePaymentResult(req.query);
+  if(result.status != 200) {
+    return sendError (res, result.status, result.message);
+  }
+  return sendSuccess(res, result.data, result.status, result.message);
+})
+
 const updateServicePackage = catchAsync(async (req, res) => {
   const article = await articleService.updateServicePackage(req.body);
   if(isEmpty(article.data)) {
@@ -72,5 +89,7 @@ module.exports = {
   deleteArticle,
   getDetailArticle,
   getListTinTop,
+  paymentServicePackage,
   updateServicePackage,
+  savePaymentResult,
 }

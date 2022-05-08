@@ -10,3 +10,4 @@ module.exports.conversationService = require('./conversation.service');
 module.exports.messageService = require('./message.service');
 module.exports.imageService = require('./image.service');
 module.exports.AdminService = require('./admin.service');
+module.exports.VNPayService = require('./VNPay.service');

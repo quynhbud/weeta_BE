@@ -15,5 +15,6 @@ router.get('/searchArticle', articleController.searchArticle);
 router.get('/detailArticle/:articleId', articleController.getDetailArticle);
 router.get('/get-list-tin-top', articleController.getListTinTop);
 router.post('/update-service-package', auth(), articleController.updateServicePackage);
-
+router.post('/payment-service-package', auth(), articleController.paymentServicePackage);
+router.post('/save-payment-result',articleController.savePaymentResult);
 module.exports = router;

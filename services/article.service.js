@@ -1,7 +1,8 @@
 const httpStatus = require('http-status');
 const dayjs = require('dayjs');
-const { Article, ServicePackage, Lessor, Account } = require('../models');
+const { Article, ServicePackage, Lessor, Account, ServicePackageTransaction } = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
+const VNPayService = require('../services/VNPay.service');
 const moment = require('moment');
 
 const createArticle = async (accountId, data, imageURLs) => {
@@ -242,9 +243,14 @@ const searchArticle = async (data) => {
         .limit(limit)
         .exec();
     const count = await Article.find({ _id: { $in: articleIds } }).count();
+    let isOver = false;
+    if (page * limit >= count || isEmpty(result)) {
+        isOver = true;
+    }
     return {
         listData: result,
         total: count,
+        isOver
     };
 };
 
@@ -261,10 +267,11 @@ const updateServicePackage = async (data) => {
                 'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng',
         };
     }
+    const servicePackage = await ServicePackage.findOne({serviceName: data.servicePackageName});
     const updateData = {
         startDateService: currentTime,
         endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
-        servicePackageId: data.servicePackageId,
+        servicePackageId: servicePackage._id,
     };
     await Article.updateOne({ _id: data.articleId }, updateData);
     const updatedArticle = await Article.findById(data.articleId);
@@ -273,7 +280,96 @@ const updateServicePackage = async (data) => {
         message: 'Cập nhật gói dịch vụ cho bài đăng thành công',
     };
 };
-
+const paymentServicePackage = async (req, lessorId, data) => {
+    const saveData = {
+        lessorId: lessorId,
+        articleId: data.articleId,
+        servicePackageName: data.servicePackageName,
+        transactionAmount: data.prices,
+        status: 'WAITFORPAYMENT',
+    }
+    const transaction = await ServicePackageTransaction.create(saveData);
+    const orderDescription = `${data.servicePackageName}-${data.numOfDate}-${lessorId}-${transaction.transactionId}-${data.articleId}`
+    const transactionData = {
+        typeOrders: "payment",
+        amount: `${~~data.prices}`,
+        bankCode: "NCB",
+        orderDescription: orderDescription,
+        language: "vn",
+        typeCart: 'CLIENT',
+        //servicePackage: data.servicePackageId,
+        lessor: lessorId,
+    };
+    const resultPayment = await VNPayService.payment(
+        req,
+        transactionData,
+    );
+    if (resultPayment.success) {
+        return {
+            success: true,
+            message: "Thanh toán thành công",
+            data: resultPayment.data.url,
+            status: 200,
+        };
+    } else {
+        return {
+            success: false,
+            message: "Thanh toán thất bại",
+            data: resultPayment.data.url,
+            status: 200,
+        };
+    }
+}
+const savePaymentResult = async (data) => {
+    try {
+        let vnp_Params = {
+            vnp_Amount: data.vnp_Amount,
+            vnp_BankCode: data.vnp_BankCode,
+            vnp_BankTranNo: data.vnp_BankTranNo,
+            vnp_CardType: data.vnp_CardType,
+            vnp_OrderInfo: data.vnp_OrderInfo,
+            vnp_PayDate: data.vnp_PayDate,
+            vnp_ResponseCode: data.vnp_ResponseCode,
+            vnp_TmnCode: data.vnp_TmnCode,
+            vnp_TransactionNo: data.vnp_TransactionNo,
+            vnp_TransactionStatus: data.vnp_TransactionStatus,
+            vnp_TxnRef: data.vnp_TxnRef,
+            vnp_SecureHashType: data.vnp_SecureHashType,
+            vnp_SecureHash: data.vnp_SecureHash,
+        };
+        const servicePackageName = vnp_Params.vnp_OrderInfo.split('-')[0];
+        const numOfDate = vnp_Params.vnp_OrderInfo.split('-')[1];
+        //const lessorId = vnp_Params.vnp_OrderInfo.split('-')[2];
+        const transactionId = vnp_Params.vnp_OrderInfo.split('-')[3];
+        const articleId = vnp_Params.vnp_OrderInfo.split('-')[4];
+        const reqData = {
+            numOfDate,
+            servicePackageName,
+            articleId,
+        }
+        if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
+            const updateArticle = await updateServicePackage(reqData);
+            const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
+            return {
+                success: true,
+                data : updateArticle.data,
+                message: "Thanh toán thành công",
+                status: 200,
+            }
+        }
+        return {
+            success: false,
+            message: "Thanh toán thất bại",
+            status: 300,
+        }
+    } catch {
+        return {
+            success: false,
+            message: "Thanh toán thất bại",
+            status: 500,
+        }
+    }
+}
 module.exports = {
     createArticle,
     getListArticle,
@@ -283,5 +379,7 @@ module.exports = {
     deleteArticle,
     getDetailArticle,
     getListTinTop,
+    paymentServicePackage,
+    savePaymentResult,
     updateServicePackage,
 };

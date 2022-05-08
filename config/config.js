@@ -72,6 +72,12 @@ const config = {
     storageBucket : envVars.STORAGE_BUCKET,
     messagingSenderId: envVars.MESSAGING_SENDER_ID,
     appId: envVars.APP_ID
+  },
+  vnpay :{
+    vnp_TmnCode: envVars.vnp_TmnCode,
+    vnp_HashSecret: envVars.vnp_HashSecret,
+    vnp_Url:envVars.vnp_Url,
+    vnp_ReturnUrl:envVars.vnp_ReturnUrl,
   }
 };
 module.exports = config;

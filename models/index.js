@@ -10,3 +10,4 @@ module.exports.MemberPackage = require('./memberPackage.model');
 module.exports.Conversation = require('./conversation.model');
 module.exports.Message = require('./message.model');
 module.exports.Location = require('./location.model');
+module.exports.ServicePackageTransaction = require('./service-package-transaction.model');
