@@ -2,13 +2,16 @@ const httpStatus = require('http-status');
 //const pick = require('../utils/pick');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { messageService } = require('../services');
+const { messageService, conversationService } = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
 
 // create message
 const createMessage = catchAsync(async (req, res) => {
     const body = req.body;
     const message = await messageService.createMessage(body);
+    await conversationService.updateConversation(body.conversation, {
+        latestMessage: message,
+    });
     if (!message) {
         return sendError(res, httpStatus.BAD_REQUEST, 'Create message fail');
     }

@@ -13,5 +13,5 @@ const MemberPackageSchema = mongoose.Schema(
     }
 );
 
-const MemberPackage = mongoose.model('member-package', MemberPackageSchema);
+const MemberPackage = mongoose.model('MemberPackage', MemberPackageSchema);
 module.exports = MemberPackage;

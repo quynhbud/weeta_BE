@@ -27,6 +27,17 @@ const createConversation = async (body) => {
     return await Conversation.create(data);
 };
 
+const updateConversation = async (conversationId, body) => {
+    const conversation = await Conversation.findOne({
+        _id: conversationId,
+    });
+    if (!conversation) {
+        return AppError(httpStatus.NOT_FOUND, 'Không tìm thấy cuộc hội thoại');
+    }
+    Object.assign(conversation, body);
+    return conversation.save();
+};
+
 const getConversation = async (memberId) => {
     const conversation = await Conversation.find({
         members: { $in: memberId },
@@ -42,6 +53,7 @@ const getListConversations = async (data, accountId) => {
         members: { $in: accountId },
     })
         .populate('members', '_id fullname avatar')
+        .populate('latestMessage', '_id text isSeen isDelete createdAt')
         .skip(skip)
         .limit(limit)
         .exec();
@@ -95,6 +107,7 @@ const searchConversations = async (data) => {
 };
 module.exports = {
     createConversation,
+    updateConversation,
     getConversation,
     getListConversations,
     searchConversations,
