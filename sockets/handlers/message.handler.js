@@ -35,6 +35,26 @@ function MessageHandler(socket) {
         });
     };
 
+    listens[EVENT_MESSAGE_CSS.UPDATE_MESSAGE_CSS] = async (payload) => {
+        socket
+            .to(payload.conversation)
+            .emit(EVENT_MESSAGE_SSC.UPDATE_MESSAGE_SSC, {
+                data: payload,
+                msg: 'update mess room success',
+                status: 200,
+            });
+    };
+
+    listens[EVENT_MESSAGE_CSS.REMOVE_MESSAGE_CSS] = async (payload) => {
+        socket
+            .to(payload.conversation)
+            .emit(EVENT_MESSAGE_SSC.REMOVE_MESSAGE_SSC, {
+                data: payload,
+                msg: 'update mess room success',
+                status: 200,
+            });
+    };
+
     return listens;
 }
 
