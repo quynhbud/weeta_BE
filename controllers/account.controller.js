@@ -28,8 +28,19 @@ const getAccountById = catchAsync(async(req,res) => {
   const account = await accountService.getAccountById(accountId);
   sendSuccess(res, { account }, httpStatus.CREATED, 'get account successfully');
 })
+
+const saveArticle = catchAsync(async (req, res) => {
+  const articleId = req.params.articleId;
+  const accountId = req.user._id;
+  const result = await accountService.saveArticle(articleId, accountId);
+  if(result.status !== 200) {
+    return sendError(res, result.status, result.messaage);
+  }
+  return sendSuccess(res, result.data, result.status, result.message );
+})
 module.exports = {
   getAccount,
   createAccount,
   getAccountById,
+  saveArticle,
 }

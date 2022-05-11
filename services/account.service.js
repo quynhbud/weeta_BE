@@ -170,6 +170,26 @@ const getProfile = async (data) => {
     }
     return data;
 };
+const saveArticle = async (articleId, accountId) => {
+    try {
+        const account = await Account.findById(accountId);
+        let saveArticle = account.saveArticle;
+        saveArticle.push(articleId);
+        await Account.updateOne({ _id: accountId }, { saveArticle: saveArticle });
+        const updateAccount = await Account.findById(accountId);
+        return {
+            status: 200,
+            data: updateAccount,
+            message: 'Lưu tin cho thuê thành công'
+        }
+    } catch {
+        return {
+            status: 400,
+            message: 'Lưu tin cho thuê thất bại'
+        }
+    }
+
+}
 
 module.exports = {
     getAccount,
@@ -186,4 +206,5 @@ module.exports = {
     updateAccountAccess,
     updateIDCard,
     getProfile,
+    saveArticle,
 };
