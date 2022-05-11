@@ -7,6 +7,17 @@ const createMessage = async (body) => {
     return await Message.create(body);
 };
 
+const updateMessage = async (messageId, body) => {
+    const message = await Message.findOne({
+        _id: messageId,
+    });
+    if (!message) {
+        return AppError(httpStatus.NOT_FOUND, 'Không tìm thấy tin nhắn');
+    }
+    Object.assign(message, body);
+    return message.save();
+};
+
 const getMessage = async (data, conversationId) => {
     const page = data.page || 1;
     const limit = data.limit || 10;
@@ -34,4 +45,5 @@ const getMessage = async (data, conversationId) => {
 module.exports = {
     createMessage,
     getMessage,
+    updateMessage,
 };

@@ -2,7 +2,7 @@ const EVENT_MESSAGE_CSS = require('../events/client/message');
 const EVENT_MESSAGE_SSC = require('../events/server/message');
 const message = require('../../services/message.service');
 const conversation = require('../../services/conversation.service');
-const { includes} = require('lodash')
+const { includes } = require('lodash')
 
 function MessageHandler(socket) {
   const listens = {};
@@ -19,7 +19,7 @@ function MessageHandler(socket) {
   listens[EVENT_MESSAGE_CSS.JOIN_ROOM_CSS] = async (payload) => {
     const { senderId, receiverId } = payload;
     const receiverIds = await conversation.getListReceiverId(senderId);
-    if(!(receiverIds.includes(receiverId))){
+    if (!(receiverIds.includes(receiverId))) {
       receiverIds.push(receiverId)
     }
     receiverIds.map(async (receiverId) => {
@@ -42,6 +42,26 @@ function MessageHandler(socket) {
       msg: 'leave room success',
       status: 200,
     });
+  };
+
+  listens[EVENT_MESSAGE_CSS.UPDATE_MESSAGE_CSS] = async (payload) => {
+    socket
+      .to(payload.conversation)
+      .emit(EVENT_MESSAGE_SSC.UPDATE_MESSAGE_SSC, {
+        data: payload,
+        msg: 'update mess room success',
+        status: 200,
+      });
+  };
+
+  listens[EVENT_MESSAGE_CSS.REMOVE_MESSAGE_CSS] = async (payload) => {
+    socket
+      .to(payload.conversation)
+      .emit(EVENT_MESSAGE_SSC.REMOVE_MESSAGE_SSC, {
+        data: payload,
+        msg: 'update mess room success',
+        status: 200,
+      });
   };
 
   return listens;

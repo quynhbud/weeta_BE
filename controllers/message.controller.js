@@ -15,7 +15,32 @@ const createMessage = catchAsync(async (req, res) => {
     if (!message) {
         return sendError(res, httpStatus.BAD_REQUEST, 'Create message fail');
     }
-    sendSuccess(res, message, httpStatus.CREATED, 'create message created');
+    sendSuccess(res, message, httpStatus.CREATED, 'created message');
+});
+
+// update message
+const updateMessage = catchAsync(async (req, res) => {
+    console.log('int eeee');
+    const body = req.body;
+    const message = await messageService.updateMessage(
+        req.params.messageId,
+        body
+    );
+    if (!message) {
+        return sendError(res, httpStatus.BAD_REQUEST, 'update message fail');
+    }
+    sendSuccess(res, message, httpStatus.CREATED, 'updated message');
+});
+
+// remove message
+const removeMessage = catchAsync(async (req, res) => {
+    const message = await messageService.updateMessage(req.params.messageId, {
+        isDelete: true,
+    });
+    if (!message) {
+        return sendError(res, httpStatus.BAD_REQUEST, 'remove message fail');
+    }
+    sendSuccess(res, message, httpStatus.CREATED, 'removed message');
 });
 //get message in conversation
 const getMessage = catchAsync(async (req, res) => {
@@ -36,4 +61,6 @@ const getMessage = catchAsync(async (req, res) => {
 module.exports = {
     createMessage,
     getMessage,
+    updateMessage,
+    removeMessage,
 };
