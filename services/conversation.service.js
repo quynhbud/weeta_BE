@@ -105,10 +105,25 @@ const searchConversations = async (data) => {
         total: count,
     };
 };
+const getListReceiverId = async (senderId) => {
+    const conversations = await Conversation.find({
+        members: { $in: senderId },
+    })
+    let receiverIds = [];
+    conversations.map((conver) => {
+        const { members } = conver;
+        const receiverId = members.filter((o) => { return o != senderId });
+        receiverIds.push(receiverId.toString());
+    })
+    return receiverIds;
+
+
+}
 module.exports = {
     createConversation,
     updateConversation,
     getConversation,
     getListConversations,
     searchConversations,
+    getListReceiverId
 };
