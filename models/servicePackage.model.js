@@ -7,5 +7,5 @@ const ServicePackageSchema = mongoose.Schema({
     price: Number,
 });
 
-const ServicePackage = mongoose.model('ServicePackage', ServicePackageSchema);
+const ServicePackage = mongoose.model('service-packages', ServicePackageSchema);
 module.exports = ServicePackage;

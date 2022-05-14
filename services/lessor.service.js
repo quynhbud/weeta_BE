@@ -55,8 +55,49 @@ const getListArticle = async (data) => {
     };
 };
 
+const paymentMemberPackage = async (req, lessorId, data) => {
+    // const saveData = {
+    //     lessorId: lessorId,
+    //     memberPackageName: data.memberPackageName,
+    //     transactionAmount: data.prices,
+    //     status: 'WAITFORPAYMENT',
+    // }
+    // const transaction = await MemberPackageTransaction.create(saveData);
+    // const orderDescription = `${data.memberPackageName}-${lessorId}-${transaction.transactionId}-${data.lessorId}`
+    // const transactionData = {
+    //     typeOrders: "payment",
+    //     amount: `${~~data.prices}`,
+    //     bankCode: "NCB",
+    //     orderDescription: orderDescription,
+    //     language: "vn",
+    //     typeCart: 'CLIENT',
+    //     //servicePackage: data.servicePackageId,
+    //     lessor: lessorId,
+    // };
+    // const resultPayment = await VNPayService.payment(
+    //     req,
+    //     transactionData,
+    // );
+    // if (resultPayment.success) {
+    //     return {
+    //         success: true,
+    //         message: "Thanh toán thành công",
+    //         data: resultPayment.data.url,
+    //         status: 200,
+    //     };
+    // } else {
+    //     return {
+    //         success: false,
+    //         message: "Thanh toán thất bại",
+    //         data: resultPayment.data.url,
+    //         status: 200,
+    //     };
+    // }
+}
+
 module.exports = {
     identifyPhoneNumber,
     createLessor,
     getListArticle,
+    paymentMemberPackage,
 };

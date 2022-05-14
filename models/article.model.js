@@ -7,8 +7,8 @@ const ArticleSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
-        district: String,
-        ward: String,
+        district: Number,
+        ward: Number,
         street: String,
         image: [String],
         price: Number,
@@ -57,11 +57,34 @@ const ArticleSchema = mongoose.Schema(
         deletedAt: {
             type: Date,
         },
+        createdAt: {
+            type: Date,
+        }
     },
     {
         timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
 );
 ArticleSchema.index({ title: 'text' });
+ArticleSchema.virtual('aboutCreated').get(function () {
+    const timeAgoMilisecond = Date.now() - this.createdAt;
+    const timeAgoSecond = timeAgoMilisecond / 1000;
+    var timeResult = null;
+    if (timeAgoSecond < 60) {
+      timeResult = timeAgoSecond.toFixed(0) + ' seconds ago';
+    } else if (timeAgoSecond < 3600) {
+      timeResult = (timeAgoSecond / 60).toFixed(0) + ' minutes ago';
+    } else if (timeAgoSecond < 86400) {
+      timeResult = (timeAgoSecond / 3600).toFixed(0) + ' hours ago';
+    } else {
+      timeResult = (timeAgoSecond / 86400).toFixed(0) + ' days ago';
+    }
+    return timeResult;
+  });
+ArticleSchema.virtual('isExpired').get(function() {
+     return this.endDate <= Date.now() ? true : false;
+})
 const Article = mongoose.model('Article', ArticleSchema);
 module.exports = Article;

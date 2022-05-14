@@ -1,11 +1,12 @@
 const httpStatus = require('http-status');
 const dayjs = require('dayjs');
-const { Article, ServicePackage, Lessor, Account, ServicePackageTransaction } = require('../models');
+const { Article, ServicePackage, Lessor, Account, ServicePackageTransaction, Location } = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
 const VNPayService = require('../services/VNPay.service');
 const moment = require('moment');
 
 const createArticle = async (accountId, data, imageURLs) => {
+    const currentTime = new Date();
     const lessor = await Lessor.findOne({ lessorId: accountId });
     const account = await Account.findOne({ _id: accountId });
     if (account.role != 'lessor') {
@@ -22,7 +23,9 @@ const createArticle = async (accountId, data, imageURLs) => {
     }
     const dataArticle = new Article({
         title: data.title,
-        address: data.address,
+        district: data.district,
+        ward: data.ward,
+        street: data.street,
         price: data.price,
         area: data.area,
         location: {
@@ -32,6 +35,11 @@ const createArticle = async (accountId, data, imageURLs) => {
         description: data.description,
         lessor: accountId,
         image: imageURLs,
+        servicePackageId: "623d886f3d13700751208a7f",
+        createdAt: currentTime,
+        endDate: moment(currentTime).add(30, 'day').format(),
+        startDateService: currentTime,
+        endDateService: moment(currentTime).add(30, 'day').format(),
     });
     const newArticle = await Article.create(dataArticle);
     if (account.isAutoApproved) {
@@ -69,20 +77,27 @@ const getListArticle = async (data) => {
     const articles = await Article.find(queryString)
         .sort({ servicePackageId: 'asc', startDate: 'desc' })
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .exec()
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
-    const servicePackage = await ServicePackage.find({
+    const servicePackages = await ServicePackage.find({
         _id: { $in: servicePackageIds },
-    });
-    const objServicePackage = keyBy(servicePackage, '_id');
+    }).exec();
+    const city = await Location.findOne({code: 79});
+    const objDistrict = keyBy(city.districts, 'code');
+    const objServicePackage = keyBy(servicePackages, '_id')
     const article = articles.map((itm) => {
-        const { servicePackageId } = itm;
+        const {servicePackageId, street } = itm;
+        const district = objDistrict[itm.district] || {};
+        const objWard =  keyBy(district.wards, 'code');
+        const ward = objWard[itm.ward] || {};
+        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
         const servicePackage = objServicePackage[servicePackageId] || {};
         return {
             _id: itm._id,
             title: itm.title,
-            address: itm.street + ', ' + itm.ward + ', ' + itm.district,
+            address,
             location: itm.location,
             image: itm.image,
             area: itm.area,
@@ -97,7 +112,11 @@ const getListArticle = async (data) => {
             timeService: itm.timeService,
             price: itm.price,
             isDelete: itm.isDelete,
-            servicePackageName: servicePackage.serviceName,
+            aboutCreated: itm.aboutCreated,
+            isExpired: itm.isExpired,
+            startDateService: itm.startDateService,
+            endDateService: itm.endDateService,
+            servicePackageName: servicePackage.serviceName
         };
     });
     let isOver = false;
@@ -267,7 +286,7 @@ const updateServicePackage = async (data) => {
                 'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng',
         };
     }
-    const servicePackage = await ServicePackage.findOne({serviceName: data.servicePackageName});
+    const servicePackage = await ServicePackage.findOne({ serviceName: data.servicePackageName });
     const updateData = {
         startDateService: currentTime,
         endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
@@ -352,7 +371,7 @@ const savePaymentResult = async (data) => {
             const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
             return {
                 success: true,
-                data : updateArticle.data,
+                data: updateArticle.data,
                 message: "Thanh toán thành công",
                 status: 200,
             }

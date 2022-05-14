@@ -58,9 +58,19 @@ const uploadIDCard = catchAsync(async (req, res) => {
     sendSuccess(res, account, httpStatus.OK, 'Cập nhật ID Card thành công');
 });
 
+const paymentMemberPackage = catchAsync(async (req, res) => {
+    // const lessorId = req.user._id;
+    // const result = await lessorService.paymentMemberPackage(req, lessorId, req.body);
+    // if (result.status != 200) {
+    //     return sendError(res, result.status, result.message);
+    // }
+    // return sendSuccess(res, result.data, result.status, result.message);
+})
+
 module.exports = {
     identifyPhoneNumber,
     getListArticles,
     createLessor,
     uploadIDCard,
+    paymentMemberPackage,
 };
