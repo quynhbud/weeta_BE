@@ -59,12 +59,19 @@ const uploadIDCard = catchAsync(async (req, res) => {
 });
 
 const paymentMemberPackage = catchAsync(async (req, res) => {
-    // const lessorId = req.user._id;
-    // const result = await lessorService.paymentMemberPackage(req, lessorId, req.body);
-    // if (result.status != 200) {
-    //     return sendError(res, result.status, result.message);
-    // }
-    // return sendSuccess(res, result.data, result.status, result.message);
+    const lessorId = req.user._id;
+    const result = await lessorService.paymentMemberPackage(req, lessorId, req.body);
+    if (result.status != 200) {
+        return sendError(res, result.status, result.message);
+    }
+    return sendSuccess(res, result.data, result.status, result.message);
+})
+const savePaymentResult = catchAsync(async (req, res) => {
+    const result = await lessorService.savePaymentResult(req.query);
+    if (result.status != 200) {
+        return sendError(res, result.status, result.message);
+    }
+    return sendSuccess(res, result.data, result.status, result.message);
 })
 
 module.exports = {
@@ -73,4 +80,5 @@ module.exports = {
     createLessor,
     uploadIDCard,
     paymentMemberPackage,
+    savePaymentResult
 };

@@ -13,5 +13,7 @@ router.post('/verifyOtp', auth(), lessorController.createLessor)
 
 router.get('/articles', auth(), lessorController.getListArticles)
 router.post('/updoadIDCard', auth(), upload, lessorController.uploadIDCard)
-//router.post('/payment-member-package', auth(), lessorController.paymentMemberPackage)
+router.post('/payment-member-package', auth(), lessorController.paymentMemberPackage)
+router.post('/save-payment-result',lessorController.savePaymentResult);
+
 module.exports = router;

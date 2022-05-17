@@ -75,7 +75,7 @@ const getListArticle = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-        .sort({ servicePackageId: 'asc', startDate: 'desc' })
+        .sort({ servicePackageId: 'asc', createdAt: 'desc' })
         .limit(limit)
         .skip(skip)
         .exec()
@@ -147,7 +147,7 @@ const getListTinTop = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-        .sort({ startDate: 'desc' })
+        .sort('-createdAt')
         .limit(limit)
         .skip(skip);
     const totalArticle = await Article.find(queryString).count();
@@ -258,6 +258,7 @@ const searchArticle = async (data) => {
     });
     const articleIds = map(articles, 'id');
     const result = await Article.find({ _id: { $in: articleIds } })
+        .sort({ servicePackageId: 'asc', createdAt: 'desc' })
         .skip(skip)
         .limit(limit)
         .exec();
