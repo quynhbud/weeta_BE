@@ -81,6 +81,10 @@ const AccountSchema = mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        isDelete: {
+            type: Boolean,
+            default: false,
+        },
         isAutoApproved: {
             type: Boolean,
             default: false,

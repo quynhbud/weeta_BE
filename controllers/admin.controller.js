@@ -22,7 +22,31 @@ const approvedIDCard = catchAsync(async(req, res) => {
   }
   sendSuccess(res, account, httpStatus.CREATED, 'approved successfully');
 })
+const getListUser = catchAsync(async(req, res) => {
+  const result = await AdminService.getListUser(req.query);
+  if (result.status !== 200) {
+    return sendError(res, result.status, result.message);
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
+const getListLessor = catchAsync(async(req, res) => {
+  const result = await AdminService.getListLessor(req.query);
+  if (result.status !== 200) {
+    return sendError(res, result.status, result.message);
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
+const deleteAccount = catchAsync(async(req, res) => {
+  const result = await AdminService.deleteAccount(req.params.accountId);
+  if (result.status !== 200) {
+    return sendError(res, result.status, result.message);
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
 module.exports = {
   approvedArticle,
-  approvedIDCard
+  approvedIDCard,
+  getListUser,
+  getListLessor,
+  deleteAccount,
 }

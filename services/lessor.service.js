@@ -42,9 +42,10 @@ const getListArticle = async (data) => {
         title: { $regex: keyword || '', $options: 'i' },
         ...rest,
     })
-        .skip(skip)
-        .limit(currentLimit)
-        .exec();
+    .sort({createdAt: 'desc'})
+    .skip(skip)
+    .limit(currentLimit)
+    .exec();
     const total = await Article.find({
         lessor: id,
         title: { $regex: keyword || '', $options: 'i' },
