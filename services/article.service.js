@@ -147,24 +147,29 @@ const getListTinTop = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-        .sort('-createdAt')
+        .sort({ createdAt: 'desc' })
         .limit(limit)
-        .skip(skip);
+        .skip(skip)
+        .exec()
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
-    const servicePackage = await ServicePackage.find({
+    const servicePackages = await ServicePackage.find({
         _id: { $in: servicePackageIds },
-    });
-    const objServicePackage = keyBy(servicePackage, '_id');
+    }).exec();
+    const city = await Location.findOne({code: 79});
+    const objDistrict = keyBy(city.districts, 'code');
+    const objServicePackage = keyBy(servicePackages, '_id')
     const article = articles.map((itm) => {
-        const { servicePackageId } = itm;
+        const {servicePackageId, street } = itm;
+        const district = objDistrict[itm.district] || {};
+        const objWard =  keyBy(district.wards, 'code');
+        const ward = objWard[itm.ward] || {};
+        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
         const servicePackage = objServicePackage[servicePackageId] || {};
         return {
             _id: itm._id,
             title: itm.title,
-            district: itm.district,
-            ward: itm.ward,
-            street: itm.street,
+            address,
             location: itm.location,
             image: itm.image,
             area: itm.area,
@@ -179,7 +184,11 @@ const getListTinTop = async (data) => {
             timeService: itm.timeService,
             price: itm.price,
             isDelete: itm.isDelete,
-            servicePackageName: servicePackage.serviceName,
+            aboutCreated: itm.aboutCreated,
+            isExpired: itm.isExpired,
+            startDateService: itm.startDateService,
+            endDateService: itm.endDateService,
+            servicePackageName: servicePackage.serviceName
         };
     });
     let isOver = false;
