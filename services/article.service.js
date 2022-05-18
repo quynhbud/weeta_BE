@@ -7,7 +7,7 @@ const moment = require('moment');
 
 const createArticle = async (accountId, data, imageURLs) => {
     const currentTime = new Date();
-    const lessor = await Lessor.findOne({ lessorId: accountId });
+    const lessor = await Lessor.findOne({ account: accountId });
     const account = await Account.findOne({ _id: accountId });
     if (account.role != 'lessor') {
         return {
@@ -47,7 +47,7 @@ const createArticle = async (accountId, data, imageURLs) => {
     }
     const articleUsed = lessor.articleUsed + 1;
     await Lessor.updateOne(
-        { lessorId: accountId },
+        { account: accountId },
         { articleUsed: articleUsed }
     );
     const article = await Article.findOne({ _id: newArticle._id });

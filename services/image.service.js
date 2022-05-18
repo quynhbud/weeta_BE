@@ -42,6 +42,7 @@ const addImage = async(file) => {
     }
 }
 const addMultiImage = async(files) => {
+console.log("files", files)
     let imageULRs = [];
     try {
         if(files.length > 10) {
