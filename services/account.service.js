@@ -160,7 +160,7 @@ const updateIDCard = async (id, IDCard) => {
 const getProfile = async (data) => {
     data.password = undefined;
     if (data.role === 'lessor') {
-        const lessor = await Lessor.findOne({ lessorId: data._id });
+        const lessor = await Lessor.findOne({ account: data._id });
         delete lessor.account;
         return {
             lessorId: lessor._id,
