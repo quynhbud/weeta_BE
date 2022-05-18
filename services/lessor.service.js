@@ -26,7 +26,7 @@ const identifyPhoneNumber = async (lessorBody) => {
 
 const createLessor = async (id) => {
     const lessor = {
-        lessorId: id,
+        account: id,
     };
     await Account.updateOne({ _id: id }, { role: 'lessor' });
     return Lessor.create(lessor);
