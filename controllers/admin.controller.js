@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 //const pick = require('../utils/pick');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { AdminService } = require('../services');
+const { AdminService, emailService} = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
 const { isEmpty } = require('lodash');
 
@@ -10,17 +10,16 @@ const approvedArticle = catchAsync(async (req, res) => {
   const articleId = req.params.id; //id: articleId
   const article = await AdminService.approvedArticle(articleId);
   if (!article) {
-    return sendError(res, httpStatus.NOT_FOUND, 'approved faild');
+    return sendError(res, httpStatus.NOT_FOUND, 'Chấp nhận tin đăng thất bại');
   }
-  sendSuccess(res, article, httpStatus.CREATED, 'approved successfully');
+  await emailService.sendAcceptArticleEmail(articleId);
+  sendSuccess(res, article, httpStatus.CREATED, 'Chấp nhận tin đăng thành công');
 });
 const rejectArticle = catchAsync(async (req, res) => {
   const articleId = req.params.id; //id: articleId
-  const article = await AdminService.approvedArticle(articleId);
-  if (!article) {
-    return sendError(res, httpStatus.NOT_FOUND, 'approved faild');
-  }
-  sendSuccess(res, article, httpStatus.CREATED, 'approved successfully');
+  const reasonReject = req.body.reasonReject;
+  await emailService.sendRejectArticleEmail(articleId, reasonReject);
+  sendSuccess(res, articleId, httpStatus.OK, 'Từ chối tin đăng thành công');
 });
 const approvedIDCard = catchAsync(async(req, res) => {
   const accountID = req.params.id;
@@ -28,7 +27,7 @@ const approvedIDCard = catchAsync(async(req, res) => {
   if (isEmpty(account)) {
     return sendError(res, httpStatus.NOT_FOUND, 'approved faild');
   }
-  sendSuccess(res, account, httpStatus.CREATED, 'approved successfully');
+  sendSuccess(res, account, httpStatus.OK, 'approved successfully');
 })
 const getListUser = catchAsync(async(req, res) => {
   const result = await AdminService.getListUser(req.query);

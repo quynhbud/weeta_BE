@@ -1,4 +1,4 @@
-const htmlRejectArticle = (url, reasonText) => {
+const htmlAcceptArticle = (url) => {
     return `<!DOCTYPE html>
     <html>
     <head>
@@ -120,14 +120,9 @@ const htmlRejectArticle = (url, reasonText) => {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">Chúng tôi rất tiếc phải thông báo rằng bài đăng của bạn không được duyệt vì những lý do sau đây:</p>
+                                <p style="margin: 0;">Chúng tôi xin thông báo bài đăng của bạn đã được duyệt và sẵn sàng lên danh sách.</p>
                             </td>
                         </tr>
-                        <tr>
-                            <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 300; line-height: 25px;">
-                                <p style="margin: 0;">${reasonText}</p>
-                            </td>
-                        </tr> 
                         <tr>
                             <td bgcolor="#ffffff" align="left">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -142,8 +137,7 @@ const htmlRejectArticle = (url, reasonText) => {
                                     </tr>
                                 </table>
                             </td>
-                        </tr>
-                        <!-- COPY -->
+                        </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                 <p style="margin: 0;">Nếu có bất kỳ câu hỏi nào, hãy trả lời lại email này, chúng tôi luôn sẵn sàng giúp đỡ.</p>
@@ -186,4 +180,4 @@ const htmlRejectArticle = (url, reasonText) => {
     </html>`;
 };
 
-module.exports = htmlRejectArticle;
+module.exports = htmlAcceptArticle;

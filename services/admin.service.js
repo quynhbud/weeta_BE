@@ -26,10 +26,10 @@ const getListUser = async(data) => {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     const skip = (page - 1) * limit;
-    const users = await Account.find({role: 'user'})
+    const users = await Account.find({role: 'user', isDelete: false})
     .skip(skip)
     .limit(limit);
-    const total = await Account.find({role: 'user'}).count();
+    const total = await Account.find({role: 'user', isDelete: false}).count();
     const result = {
       users: users,
       total: total,
@@ -51,10 +51,10 @@ const getListLessor = async(data) => {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     const skip = (page - 1) * limit;
-    const lessor = await Account.find({role: 'lessor'})
+    const lessor = await Account.find({role: 'lessor', isDelete: false})
     .skip(skip)
     .limit(limit);
-    const total = await Account.find({role: 'lessor'}).count();
+    const total = await Account.find({role: 'lessor', isDelete: false}).count();
     const result = {
       users: lessor,
       total: total,

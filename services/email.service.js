@@ -103,7 +103,8 @@ const sendRejectBusinessEmail = async (to) => {
  */
  const sendRejectArticleEmail = async (to, id, reasonReject) => {
     const subject = 'Từ chối bài viết';
-    const html = htlmRejectArticle(id, reasonReject);
+    const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`;// cho nay m keu de m gui lai sau
+    const html = htlmRejectArticle(articleUrl, reasonReject);
     await sendEmail(to, subject, '', html);
 };
 /**
@@ -113,10 +114,10 @@ const sendRejectBusinessEmail = async (to) => {
  * @returns {Promise}
  */
  const sendAcceptArticleEmail = async (to, id) => {
-    // const subject = 'Duyệt bài viết';
-    // const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`;
-    // const html = htlmAcceptArticle(id, articleUrl);
-    // await sendEmail(to, subject, '', html);
+    const subject = 'Duyệt bài viết';
+    const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`; // cho nay m keu de m gui lai sau
+    const html = htlmAcceptArticle(id, articleUrl);
+    await sendEmail(to, subject, '', html);
 };
 module.exports = {
     transport,
