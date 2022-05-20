@@ -50,6 +50,10 @@ const ArticleSchema = mongoose.Schema(
         endDateService: {
             type: Date,
         },
+        isPublished: {
+            type: Boolean,
+            default: false,
+        },
         isDelete: {
             type: Boolean,
             default: false,

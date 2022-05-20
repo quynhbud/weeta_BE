@@ -36,6 +36,7 @@ const createArticle = async (accountId, data, imageURLs) => {
         lessor: accountId,
         image: imageURLs,
         servicePackageId: "623d886f3d13700751208a7f",
+        isPublished: false,
         createdAt: currentTime,
         endDate: moment(currentTime).add(30, 'day').format(),
         startDateService: currentTime,
@@ -230,7 +231,7 @@ const updateArticle = async (data) => {
 const deleteArticle = async (data) => {
     const deleteArticle = await Article.updateOne(
         { _id: data.articleId },
-        { isDelete: true }
+        { isDelete: true, deletedAt: new Date() }
     );
     return deleteArticle;
 };
@@ -301,6 +302,7 @@ const updateServicePackage = async (data) => {
         startDateService: currentTime,
         endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
         servicePackageId: servicePackage._id,
+        isPublished: true,
     };
     await Article.updateOne({ _id: data.articleId }, updateData);
     const updatedArticle = await Article.findById(data.articleId);

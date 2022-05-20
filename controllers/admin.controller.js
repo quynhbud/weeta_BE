@@ -14,6 +14,14 @@ const approvedArticle = catchAsync(async (req, res) => {
   }
   sendSuccess(res, article, httpStatus.CREATED, 'approved successfully');
 });
+const rejectArticle = catchAsync(async (req, res) => {
+  const articleId = req.params.id; //id: articleId
+  const article = await AdminService.approvedArticle(articleId);
+  if (!article) {
+    return sendError(res, httpStatus.NOT_FOUND, 'approved faild');
+  }
+  sendSuccess(res, article, httpStatus.CREATED, 'approved successfully');
+});
 const approvedIDCard = catchAsync(async(req, res) => {
   const accountID = req.params.id;
   const account = await AdminService.approvedIDCard(accountID);
@@ -49,4 +57,5 @@ module.exports = {
   getListUser,
   getListLessor,
   deleteAccount,
+  rejectArticle
 }

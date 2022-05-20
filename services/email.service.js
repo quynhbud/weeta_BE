@@ -3,6 +3,8 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 const htmlEmailConfirm = require('../constant/confirmEmail');
 const htmlResetPassword = require('../constant/resetPassEmail');
+const htlmRejectArticle = require('../constant/rejectArticleEmail');
+//const htlmAcceptArticle = require('../constant/acceptArticleEmail');
 const htmlWelcome = require('../constant/welcomeEmail');
 //const htmlReject = require('../constant/rejectEmail');
 const htmlApprove = require('../constant/approveEmail');
@@ -92,7 +94,30 @@ const sendRejectBusinessEmail = async (to) => {
     const html = htmlReject();
     await sendEmail(to, subject, '', html);
 };
-
+/**
+ * Send reject article email
+ * @param {string} to
+ * @param {string} reasonReject
+ * @param {string} id
+ * @returns {Promise}
+ */
+ const sendRejectArticleEmail = async (to, id, reasonReject) => {
+    const subject = 'Từ chối bài viết';
+    const html = htlmRejectArticle(id, reasonReject);
+    await sendEmail(to, subject, '', html);
+};
+/**
+ * Send accept article email
+ * @param {string} to
+ * @param {string} id
+ * @returns {Promise}
+ */
+ const sendAcceptArticleEmail = async (to, id) => {
+    // const subject = 'Duyệt bài viết';
+    // const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`;
+    // const html = htlmAcceptArticle(id, articleUrl);
+    // await sendEmail(to, subject, '', html);
+};
 module.exports = {
     transport,
     sendEmail,
@@ -101,4 +126,6 @@ module.exports = {
     sendWelcomeBusinessEmail,
     sendApproveBusinessEmail,
     sendRejectBusinessEmail,
+    sendRejectArticleEmail,
+    sendAcceptArticleEmail,
 };
