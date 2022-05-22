@@ -27,5 +27,8 @@
      });
    }
 }
+module.exports = {
+  handleVnpayReturn,
+}
 
 

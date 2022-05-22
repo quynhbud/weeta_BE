@@ -59,7 +59,7 @@ const createArticle = async (accountId, data, imageURLs) => {
 };
 const getListArticle = async (data) => {
     data.isDelete = false;
-    data.isApproved = true;
+    data.isApproved = (data?.isApprove === 'true') ? true : false;
     data.servicePackageId = {
         in: ['623d88663d13700751208a7e', '623d886f3d13700751208a7f'],
     };
@@ -401,6 +401,77 @@ const savePaymentResult = async (data) => {
         }
     }
 }
+const getAllArticle = async(data)=>{
+    data.isDelete = (data?.isDelete === 'true') ? true : false;
+    data.isApproved = (data?.isApprove === 'true') ? true : false;
+    const page = data.page * 1 || 1;
+    const limit = data.limit * 1 || 10;
+    const skip = (page - 1) * limit;
+    const queryObj = data;
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(
+        /\b(gte|gt|lt|lte|in|regex|option)\b/g,
+        (match) => `$${match}`
+    );
+    const queryString = JSON.parse(queryStr);
+    const articles = await Article.find(queryString)
+        .sort({ servicePackageId: 'asc', createdAt: 'desc' })
+        .limit(limit)
+        .skip(skip)
+        .exec()
+    const totalArticle = await Article.find(queryString).count();
+    const servicePackageIds = map(articles, 'servicePackageId');
+    const servicePackages = await ServicePackage.find({
+        _id: { $in: servicePackageIds },
+    }).exec();
+    const city = await Location.findOne({code: 79});
+    const objDistrict = keyBy(city.districts, 'code');
+    const objServicePackage = keyBy(servicePackages, '_id')
+    const article = articles.map((itm) => {
+        const {servicePackageId, street } = itm;
+        const district = objDistrict[itm.district] || {};
+        const objWard =  keyBy(district.wards, 'code');
+        const ward = objWard[itm.ward] || {};
+        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
+        const servicePackage = objServicePackage[servicePackageId] || {};
+        return {
+            _id: itm._id,
+            title: itm.title,
+            address,
+            location: itm.location,
+            image: itm.image,
+            area: itm.area,
+            description: itm.description,
+            vendorId: itm.vendorId,
+            isApproved: itm.isApproved,
+            isAvailable: itm.isAvailable,
+            createdAt: itm.createdAt,
+            startDate: itm.startDate,
+            endDate: itm.endDate,
+            servicePackageId: itm.servicePackageId,
+            timeService: itm.timeService,
+            price: itm.price,
+            isDelete: itm.isDelete,
+            aboutCreated: itm.aboutCreated,
+            isExpired: itm.isExpired,
+            startDateService: itm.startDateService,
+            endDateService: itm.endDateService,
+            servicePackageName: servicePackage.serviceName
+        };
+    });
+    let isOver = false;
+    if (page * limit >= totalArticle || isEmpty(article)) {
+        isOver = true;
+    }
+    const result = {
+        data: article,
+        total: totalArticle,
+        isOver: isOver,
+    };
+    return result;
+}
 module.exports = {
     createArticle,
     getListArticle,
@@ -413,4 +484,5 @@ module.exports = {
     paymentServicePackage,
     savePaymentResult,
     updateServicePackage,
+    getAllArticle,
 };
