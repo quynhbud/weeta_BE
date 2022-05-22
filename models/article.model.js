@@ -54,7 +54,7 @@ const ArticleSchema = mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        isDelete: {
+        isDeleted: {
             type: Boolean,
             default: false,
         },

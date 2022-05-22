@@ -253,14 +253,19 @@ const removeVN = (Text) => {
 const searchArticle = async (data) => {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
+    data.isDeleted = (data?.isDeleted === 'true') ? true : false;
+    data.isApproved = (data?.isApproved === 'true') ? true : false;
     const skip = (page - 1) * limit;
-    let searchField = data.keyword;
-    searchField = removeVN(searchField);
-    let keyword = new RegExp(
-        searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
-        'i'
-    );
-    const listArticle = await Article.find();
+    let searchField = data?.keyword || '';
+    let keyword = '';
+    if(searchField) {
+        searchField = removeVN(searchField);
+        keyword = new RegExp(
+            searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+            'i'
+            );
+        }
+    const listArticle = await Article.find(data);
     const articles = listArticle.map((article) => {
         if (removeVN(article.title).match(keyword)) {
             return article;
@@ -403,7 +408,7 @@ const savePaymentResult = async (data) => {
 }
 const getAllArticle = async(data)=>{
     data.isDelete = (data?.isDelete === 'true') ? true : false;
-    data.isApproved = (data?.isApprove === 'true') ? true : false;
+    data.isApproved = (data?.isApproved === 'true') ? true : false;
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
