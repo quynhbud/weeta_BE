@@ -58,61 +58,72 @@ const getListTinTop = catchAsync(async (req, res) => {
 
 const paymentServicePackage = catchAsync(async (req, res) => {
   const lessorId = req.user._id;
-  const result = await articleService.paymentServicePackage(req,lessorId,req.body);
-  if(result.status != 200) {
-    return sendError (res, result.status, result.message);
+  const result = await articleService.paymentServicePackage(req, lessorId, req.body);
+  if (result.status != 200) {
+    return sendError(res, result.status, result.message);
   }
   return sendSuccess(res, result.data, result.status, result.message);
 })
 
 const savePaymentResult = catchAsync(async (req, res) => {
   const result = await articleService.savePaymentResult(req.query);
-  if(result.status != 200) {
-    return sendError (res, result.status, result.message);
+  if (result.status != 200) {
+    return sendError(res, result.status, result.message);
   }
-  return sendSuccess(res, result.data, result.status, result.message);
+  res.writeHead(301, {
+    Location: `http://google.com`
+  }).end();
 })
 
 const updateServicePackage = catchAsync(async (req, res) => {
   const article = await articleService.updateServicePackage(req.body);
-  if(isEmpty(article.data)) {
+  if (isEmpty(article.data)) {
     return sendError(res, httpStatus.BAD_REQUEST, article.message)
   }
   return sendSuccess(res, article.data, httpStatus.OK, article.message);
 })
-const getIPN = catchAsync(async(req, res) => {
-  var vnp_Params = req.query;
+const getIPN = catchAsync(async (req, res) => {
+  var params = req.query;
+  var secureHash = params['vnp_SecureHash'];
+  delete params['vnp_SecureHash'];
+  delete params['vnp_SecureHashType'];
+  let vnp_Params = {
+    vnp_Amount: params['vnp_Amount'],
+    vnp_BankCode: params['vnp_BankCode'],
+    vnp_BankTranNo: params['vnp_BankTranNo'],
+    vnp_CardType: params['vnp_CardType'],
+    vnp_OrderInfo: params['vnp_OrderInfo'],
+    vnp_PayDate: params['vnp_PayDate'],
+    vnp_ResponseCode: params['vnp_ResponseCode'],
+    vnp_TmnCode: params['vnp_TmnCode'],
+    vnp_TransactionNo: params['vnp_TransactionNo'],
+    vnp_TransactionStatus: params['vnp_TransactionStatus'],
+    vnp_TxnRef: params['vnp_TxnRef'],
+    vnp_SecureHashType: params['vnp_SecureHashType'],
+    vnp_SecureHash: params['vnp_SecureHash'],
+  };
+  vnp_Params = VNPayService.sortObject(vnp_Params);
   console.log("vnp_Params", vnp_Params)
-    var secureHash = vnp_Params['vnp_SecureHash'];
-    console.log("secureHash", secureHash)
+  var secretKey = config.vnpay.vnp_HashSecret;
+  var querystring = require('qs');
+  var signData = querystring.stringify(vnp_Params, { encode: false });
+  var crypto = require("crypto");
+  var hmac = crypto.createHmac("sha512", secretKey);
+  var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
 
-    delete vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHashType'];
-
-    vnp_Params = VNPayService.sortObject(vnp_Params);
-    
-    var secretKey = config.vnpay.vnp_HashSecret;
-    var querystring = require('qs');
-    var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
-    var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-    console.log("signed", signed)
-     
-
-    if(vnp_Params['vnp_ResponseCode']=== '00'){
-        var orderId = vnp_Params['vnp_TxnRef'];
-        var rspCode = vnp_Params['vnp_ResponseCode'];
-        //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
-        res.writeHead(301, {
-          Location: `http://google.com`
-        }).end();
-    }
-    else {
-        res.status(200).json({RspCode: '97', Message: 'Fail checksum'})
-    }
-  })
-const getAllArticle = catchAsync(async(req,res) => {
+  if (vnp_Params['vnp_ResponseCode'] === '00') {
+    var orderId = vnp_Params['vnp_TxnRef'];
+    var rspCode = vnp_Params['vnp_ResponseCode'];
+    //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+    res.writeHead(301, {
+      Location: `http://google.com`
+    }).end();
+  }
+  else {
+    res.status(200).json({ RspCode: '97', Message: 'Fail checksum' })
+  }
+})
+const getAllArticle = catchAsync(async (req, res) => {
   const listArticle = await articleService.getAllArticle(req.query);
   if (isEmpty(listArticle)) {
     return sendError(res, httpStatus.BAD_REQUEST, 'Lấy toàn bộ danh sách thất bại')

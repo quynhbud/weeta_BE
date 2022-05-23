@@ -17,6 +17,6 @@ router.get('/get-list-tin-top', articleController.getListTinTop);
 router.post('/update-service-package', auth(), articleController.updateServicePackage);
 router.post('/payment-service-package', auth(), articleController.paymentServicePackage);
 router.get('/vnpay_ipn', articleController.getIPN)
-router.post('/save-payment-result',articleController.savePaymentResult);
+router.get('/save-payment-result',articleController.savePaymentResult);
 router.get('/get-all-article', articleController.getAllArticle);
 module.exports = router;
