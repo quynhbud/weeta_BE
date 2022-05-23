@@ -58,8 +58,8 @@ const createArticle = async (accountId, data, imageURLs) => {
     };
 };
 const getListArticle = async (data) => {
-    data.isDelete = false;
-    data.isApproved = (data?.isApprove === 'true') ? true : false;
+    data.isDeleted = false;
+    data.isApproved = true;
     data.servicePackageId = {
         in: ['623d88663d13700751208a7e', '623d886f3d13700751208a7f'],
     };
@@ -95,10 +95,10 @@ const getListArticle = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-        .sort({ servicePackageId: 'asc', createdAt: 'desc' })
-        .limit(limit)
-        .skip(skip)
-        .exec()
+    .sort({ servicePackageId: 'asc', createdAt: 'desc' })
+    .limit(limit)
+    .skip(skip)
+    .exec()
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
@@ -186,10 +186,10 @@ const getListTinTop = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-        .sort({ createdAt: 'desc' })
-        .limit(limit)
-        .skip(skip)
-        .exec()
+    .sort({ createdAt: 'desc' })
+    .limit(limit)
+    .skip(skip)
+    .exec()
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
