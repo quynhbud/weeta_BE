@@ -66,6 +66,25 @@ const getListArticle = async (data) => {
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
+    let searchField = data?.keyword || '';
+    let keyword,articleIds = '';
+    if (searchField) {
+        searchField = removeVN(searchField);
+        keyword = new RegExp(
+            searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+            'i'
+        );
+        const listArticle = await Article.find();
+        const articles = listArticle.map((article) => {
+            if (removeVN(article.title).match(keyword)) {
+                return article;
+            }
+        }).filter((itm) => {return !(isEmpty(itm))});
+        articleIds = map(articles, 'id');
+    }
+    if(!isEmpty(articleIds)){
+        data._id = { in: articleIds}
+    }
     const queryObj = data;
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
@@ -85,13 +104,13 @@ const getListArticle = async (data) => {
     const servicePackages = await ServicePackage.find({
         _id: { $in: servicePackageIds },
     }).exec();
-    const city = await Location.findOne({code: 79});
+    const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
     const objServicePackage = keyBy(servicePackages, '_id')
     const article = articles.map((itm) => {
-        const {servicePackageId, street } = itm;
+        const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
-        const objWard =  keyBy(district.wards, 'code');
+        const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
         const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
         const servicePackage = objServicePackage[servicePackageId] || {};
@@ -138,6 +157,25 @@ const getListTinTop = async (data) => {
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
+    let searchField = data?.keyword || '';
+    let keyword,articleIds = '';
+    if (searchField) {
+        searchField = removeVN(searchField);
+        keyword = new RegExp(
+            searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+            'i'
+        );
+        const listArticle = await Article.find();
+        const articles = listArticle.map((article) => {
+            if (removeVN(article.title).match(keyword)) {
+                return article;
+            }
+        }).filter((itm) => {return !(isEmpty(itm))});
+        articleIds = map(articles, 'id');
+    }
+    if(!isEmpty(articleIds)){
+        data._id = { in: articleIds}
+    }
     const queryObj = data;
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
@@ -157,13 +195,13 @@ const getListTinTop = async (data) => {
     const servicePackages = await ServicePackage.find({
         _id: { $in: servicePackageIds },
     }).exec();
-    const city = await Location.findOne({code: 79});
+    const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
     const objServicePackage = keyBy(servicePackages, '_id')
     const article = articles.map((itm) => {
-        const {servicePackageId, street } = itm;
+        const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
-        const objWard =  keyBy(district.wards, 'code');
+        const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
         const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
         const servicePackage = objServicePackage[servicePackageId] || {};
@@ -258,13 +296,13 @@ const searchArticle = async (data) => {
     const skip = (page - 1) * limit;
     let searchField = data?.keyword || '';
     let keyword = '';
-    if(searchField) {
+    if (searchField) {
         searchField = removeVN(searchField);
         keyword = new RegExp(
             searchField.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
             'i'
-            );
-        }
+        );
+    }
     const listArticle = await Article.find(data);
     const articles = listArticle.map((article) => {
         if (removeVN(article.title).match(keyword)) {
@@ -406,7 +444,7 @@ const savePaymentResult = async (data) => {
         }
     }
 }
-const getAllArticle = async(data)=>{
+const getAllArticle = async (data) => {
     data.isDelete = (data?.isDelete === 'true') ? true : false;
     data.isApproved = (data?.isApproved === 'true') ? true : false;
     const page = data.page * 1 || 1;
@@ -431,13 +469,13 @@ const getAllArticle = async(data)=>{
     const servicePackages = await ServicePackage.find({
         _id: { $in: servicePackageIds },
     }).exec();
-    const city = await Location.findOne({code: 79});
+    const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
     const objServicePackage = keyBy(servicePackages, '_id')
     const article = articles.map((itm) => {
-        const {servicePackageId, street } = itm;
+        const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
-        const objWard =  keyBy(district.wards, 'code');
+        const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
         const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
         const servicePackage = objServicePackage[servicePackageId] || {};
