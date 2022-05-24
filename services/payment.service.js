@@ -1,9 +1,4 @@
-const httpStatus = require('http-status');
-const { random } = require('lodash');
-const Article = require('../models/article.model');
-const {Article, ServicePackage, Lessor, Account, ServicePackageTransaction MemberPackageTransaction, MemberPackage } = require('../models/index');
-const AppError = require('../utils/appError');
-const SendOTPService = require('./sendOTP.service');
+const {Article, ServicePackage, Lessor, Account, ServicePackageTransaction,MemberPackageTransaction, MemberPackage } = require('../models/index');
 const VNPayService = require('./VNPay.service');
 
 const paymentPackage = async (req, lessorId, data) => {
@@ -120,11 +115,11 @@ const savePaymentResult = async (data) => {
       }
     }
     if(type === 'SERVICEPACKAGE'){
-      const servicePackageName = vnp_Params.vnp_OrderInfo.split('-')[0];
-        const numOfDate = vnp_Params.vnp_OrderInfo.split('-')[1];
+      const servicePackageName = vnp_Params.vnp_OrderInfo.split('-')[1];
+        const numOfDate = vnp_Params.vnp_OrderInfo.split('-')[2];
         //const lessorId = vnp_Params.vnp_OrderInfo.split('-')[2];
-        const transactionId = vnp_Params.vnp_OrderInfo.split('-')[3];
-        const articleId = vnp_Params.vnp_OrderInfo.split('-')[4];
+        const transactionId = vnp_Params.vnp_OrderInfo.split('-')[4];
+        const articleId = vnp_Params.vnp_OrderInfo.split('-')[5];
         const reqData = {
             numOfDate,
             servicePackageName,
@@ -146,8 +141,6 @@ const savePaymentResult = async (data) => {
             status: 300,
         }
     }
-    
-    console.log("reqData", reqData)
     
   } catch {
     return {
