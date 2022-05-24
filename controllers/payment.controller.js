@@ -16,9 +16,22 @@ const savePaymentResult = catchAsync(async (req, res) => {
   if (result.status != 200) {
     return sendError(res, result.status, result.message);
   }
+  const {type,articleId, paymentId} = result;
+  console.log("result", result)
   res.writeHead(301, {
-    Location: `http://google.com`
+    Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`
   }).end();
+  // if(type === 'SERVICEPACKAGE'){
+  //   res.writeHead(301, {
+  //     Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`
+  //   }).end();
+  // }
+  // if(type === 'MEMBERPACKAGE') {
+  //   res.writeHead(301, {
+  //     Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/type=${MEM}&articleId=${arti}&paymentId=${}`
+  //   }).end();
+  // }
+  
 })
 
 module.exports = {

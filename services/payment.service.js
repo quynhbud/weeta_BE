@@ -104,6 +104,8 @@ const savePaymentResult = async (data) => {
         const updateTransaction = await MemberPackageTransaction.updateOne({ _id: transactionId }, { status: 'SUCCESS' })
         return {
           success: true,
+          type: 'MEMBERPACKAGE',
+          paymentId: transactionId,
           data: updateLessor.data,
           message: "Thanh toán thành công",
           status: 200,
@@ -130,8 +132,11 @@ const savePaymentResult = async (data) => {
         console.log(1)
         const updateArticle = await updateServicePackage(reqData);
         const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
+        const transaction = await ServicePackageTransaction.findOne({ transactionId: transactionId })
         return {
           success: true,
+          type: 'MEMBERPACKAGE',
+          paymentId: transaction._id,
           data: updateArticle.data,
           message: "Thanh toán thành công",
           status: 200,
