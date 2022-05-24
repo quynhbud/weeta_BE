@@ -173,23 +173,42 @@ const getProfile = async (data) => {
 const saveArticle = async (articleId, accountId) => {
     try {
         const account = await Account.findById(accountId);
-        let saveArticle = account.saveArticle;
-        saveArticle.push(articleId);
-        await Account.updateOne({ _id: accountId }, { saveArticle: saveArticle });
-        const updateAccount = await Account.findById(accountId);
-        return {
-            status: 200,
-            data: updateAccount,
-            message: 'Lưu tin cho thuê thành công'
+        const saveArticle = account.saveArticle.map((item) => item.toString());
+        const checkExist = saveArticle.some((item) => item === articleId);
+        if (checkExist) {
+            const newSaveArticle = saveArticle.filter(
+                (item) => item !== articleId
+            );
+            await Account.updateOne(
+                { _id: accountId },
+                { saveArticle: newSaveArticle }
+            );
+            const updateAccount = await getAccountById(accountId);
+            return {
+                status: 200,
+                data: updateAccount,
+                message: 'Bỏ lưu tin thành công',
+            };
+        } else {
+            const newSaveArticle = [...saveArticle, articleId];
+            await Account.updateOne(
+                { _id: accountId },
+                { saveArticle: newSaveArticle }
+            );
+            const updateAccount = await getAccountById(accountId);
+            return {
+                status: 200,
+                data: updateAccount,
+                message: 'Lưu tin thành công',
+            };
         }
-    } catch {
+    } catch (err) {
         return {
             status: 400,
-            message: 'Lưu tin cho thuê thất bại'
-        }
+            message: err,
+        };
     }
-
-}
+};
 
 module.exports = {
     getAccount,

@@ -1,15 +1,15 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
-const accountController  = require('../../controllers/account.controller');
+const accountController = require('../../controllers/account.controller');
 
 const router = express.Router();
 
-router.post('/signup',accountController.createAccount);
+router.post('/signup', accountController.createAccount);
 
 router.get('/get-account', accountController.getAccount);
 
 router.get('/get-account/:id', accountController.getAccountById);
 
-router.post('/save-article/:articleId', auth(), accountController.saveArticle);
+router.get('/save-article/:articleId', auth(), accountController.saveArticle);
 
 module.exports = router;
