@@ -129,14 +129,14 @@ const savePaymentResult = async (data) => {
         articleId,
       }
       if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
-        console.log(1)
         const updateArticle = await updateServicePackage(reqData);
         const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
         const transaction = await ServicePackageTransaction.findOne({ transactionId: transactionId })
         return {
           success: true,
-          type: 'MEMBERPACKAGE',
+          type: 'SERVICEPACKAGE',
           paymentId: transaction._id,
+          articleId: articleId,
           data: updateArticle.data,
           message: "Thanh toán thành công",
           status: 200,

@@ -58,20 +58,17 @@ const uploadIDCard = catchAsync(async (req, res) => {
     sendSuccess(res, account, httpStatus.OK, 'Cập nhật ID Card thành công');
 });
 
-const paymentMemberPackage = catchAsync(async (req, res) => {
+const getListTransaction = catchAsync(async (req, res)=>{
     const lessorId = req.user._id;
-    const result = await lessorService.paymentMemberPackage(req, lessorId, req.body);
-    if (result.status != 200) {
-        return sendError(res, result.status, result.message);
+    const result = await lessorService.getListTransaction(req.query, lessorId);
+    if (!result) {
+        return sendError(
+            res,
+            httpStatus.BAD_REQUEST,
+            'Lỗi'
+        );
     }
-    return sendSuccess(res, result.data, result.status, result.message);
-})
-const savePaymentResult = catchAsync(async (req, res) => {
-    const result = await lessorService.savePaymentResult(req.query);
-    if (result.status != 200) {
-        return sendError(res, result.status, result.message);
-    }
-    return sendSuccess(res, result.data, result.status, result.message);
+    return sendSuccess(res, result, httpStatus.OK, 'Lấy danh sách thanh toán thành công');
 })
 
 module.exports = {
@@ -79,6 +76,5 @@ module.exports = {
     getListArticles,
     createLessor,
     uploadIDCard,
-    paymentMemberPackage,
-    savePaymentResult
+    getListTransaction,
 };
