@@ -5,3 +5,4 @@ const router = express.Router();
 
 router.post('/payment-package', auth(), paymentController.paymentPackage);
 router.get('/save-payment-result',auth(), paymentController.savePaymentResult);
+module.exports = router;

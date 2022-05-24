@@ -8,6 +8,7 @@ const messageRoute = require('./message.routes');
 const locationRoute = require('./location.routes');
 const imageRoute = require('./image.routes');
 const adminRoute = require('./admin.routes');
+const paymentRoute = require('./payment.routes')
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const defaultRoutes = [
   {
     path: '/admin',
     route: adminRoute,
+  },
+  {
+    path: '/payment',
+    route: paymentRoute,
   }
 ];
 

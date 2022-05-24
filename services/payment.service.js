@@ -1,5 +1,6 @@
-const {Article, ServicePackage, Lessor, Account, ServicePackageTransaction,MemberPackageTransaction, MemberPackage } = require('../models/index');
+const { Article, ServicePackage, Lessor, Account, ServicePackageTransaction, MemberPackageTransaction, MemberPackage } = require('../models/index');
 const VNPayService = require('./VNPay.service');
+const moment = require('moment');
 
 const paymentPackage = async (req, lessorId, data) => {
   let resultPayment = {};
@@ -88,13 +89,13 @@ const savePaymentResult = async (data) => {
       vnp_SecureHash: data.vnp_SecureHash,
     };
     const type = vnp_Params.vnp_OrderInfo.split('-')[0];
-    if(type === 'MEMBERPACKAGE'){
+    if (type === 'MEMBERPACKAGE') {
       const memberPackageName = vnp_Params.vnp_OrderInfo.split('-')[1];
       const transactionId = vnp_Params.vnp_OrderInfo.split('-')[2];
       const accountId = vnp_Params.vnp_OrderInfo.split('-')[3];
-      const memberPackage = await MemberPackage.findOne({ serviceName: memberPackageName })
+      const memberPackage = await MemberPackage.findOne({ memberPackageName: memberPackageName })
       const reqData = {
-        memberPackageId: memberPackage.memberPackageId,
+        memberPackageId: memberPackage._id,
         transactionId,
         accountId,
       }
@@ -114,34 +115,35 @@ const savePaymentResult = async (data) => {
         status: 300,
       }
     }
-    if(type === 'SERVICEPACKAGE'){
+    if (type === 'SERVICEPACKAGE') {
       const servicePackageName = vnp_Params.vnp_OrderInfo.split('-')[1];
-        const numOfDate = vnp_Params.vnp_OrderInfo.split('-')[2];
-        //const lessorId = vnp_Params.vnp_OrderInfo.split('-')[2];
-        const transactionId = vnp_Params.vnp_OrderInfo.split('-')[4];
-        const articleId = vnp_Params.vnp_OrderInfo.split('-')[5];
-        const reqData = {
-            numOfDate,
-            servicePackageName,
-            articleId,
-        }
-        if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
-            const updateArticle = await updateServicePackage(reqData);
-            const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
-            return {
-                success: true,
-                data: updateArticle.data,
-                message: "Thanh toán thành công",
-                status: 200,
-            }
-        }
+      const numOfDate = vnp_Params.vnp_OrderInfo.split('-')[2];
+      //const lessorId = vnp_Params.vnp_OrderInfo.split('-')[2];
+      const transactionId = vnp_Params.vnp_OrderInfo.split('-')[4];
+      const articleId = vnp_Params.vnp_OrderInfo.split('-')[5];
+      const reqData = {
+        numOfDate,
+        servicePackageName,
+        articleId,
+      }
+      if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
+        console.log(1)
+        const updateArticle = await updateServicePackage(reqData);
+        const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
         return {
-            success: false,
-            message: "Thanh toán thất bại",
-            status: 300,
+          success: true,
+          data: updateArticle.data,
+          message: "Thanh toán thành công",
+          status: 200,
         }
+      }
+      return {
+        success: false,
+        message: "Thanh toán thất bại",
+        status: 300,
+      }
     }
-    
+
   } catch {
     return {
       success: false,
@@ -153,42 +155,42 @@ const savePaymentResult = async (data) => {
 const updateMemberPackage = async (data) => {
   const memberPackage = await MemberPackage.findById(data.memberPackageId);
   const updateData = {
-      memberPackageId: data.memberPackageId,
-      articleTotal: memberPackage.articlePerMonth,
-      articleUsed: 0,
+    memberPackageId: data.memberPackageId,
+    articleTotal: memberPackage.articlePerMonth,
+    articleUsed: 0,
   };
   await Lessor.updateOne({ account: data.accountId }, updateData);
-  const updateLessor = await Lessor.findOne({account: data.accountId});
+  const updateLessor = await Lessor.findOne({ account: data.accountId });
   return {
-      data: updateLessor,
-      message: 'Cập nhật gói thành viên người cho thuê thành công',
+    data: updateLessor,
+    message: 'Cập nhật gói thành viên người cho thuê thành công',
   };
 }
 const updateServicePackage = async (data) => {
   const currentTime = new Date();
-  const article = await Article.findById(data.articleId);
+  const article = await Article.findOne({ _id: data.articleId });
   const numOfDate = moment(article.endDate)
-      .endOf('day')
-      .diff(moment(currentTime).startOf('day'), 'day');
+    .endOf('day')
+    .diff(moment(currentTime).startOf('day'), 'day');
   if (data.numOfDate > numOfDate) {
-      return {
-          data: [],
-          message:
-              'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng',
-      };
+    return {
+      data: [],
+      message:
+        'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng',
+    };
   }
   const servicePackage = await ServicePackage.findOne({ serviceName: data.servicePackageName });
   const updateData = {
-      startDateService: currentTime,
-      endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
-      servicePackageId: servicePackage._id,
-      isPublished: true,
+    startDateService: currentTime,
+    endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
+    servicePackageId: servicePackage._id,
+    isPublished: true,
   };
   await Article.updateOne({ _id: data.articleId }, updateData);
   const updatedArticle = await Article.findById(data.articleId);
   return {
-      data: updatedArticle,
-      message: 'Cập nhật gói dịch vụ cho bài đăng thành công',
+    data: updatedArticle,
+    message: 'Cập nhật gói dịch vụ cho bài đăng thành công',
   };
 };
 module.exports = {
