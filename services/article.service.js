@@ -1,6 +1,13 @@
 const httpStatus = require('http-status');
 const dayjs = require('dayjs');
-const { Article, ServicePackage, Lessor, Account, ServicePackageTransaction, Location } = require('../models');
+const {
+    Article,
+    ServicePackage,
+    Lessor,
+    Account,
+    ServicePackageTransaction,
+    Location,
+} = require('../models');
 const { map, keyBy, isEmpty } = require('lodash');
 const VNPayService = require('../services/VNPay.service');
 const moment = require('moment');
@@ -35,7 +42,7 @@ const createArticle = async (accountId, data, imageURLs) => {
         description: data.description,
         lessor: accountId,
         image: imageURLs,
-        servicePackageId: "623d886f3d13700751208a7f",
+        servicePackageId: '623d886f3d13700751208a7f',
         isPublished: false,
         createdAt: currentTime,
         endDate: moment(currentTime).add(30, 'day').format(),
@@ -67,7 +74,8 @@ const getListArticle = async (data) => {
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
     let searchField = data?.keyword || '';
-    let keyword,articleIds = '';
+    let keyword,
+        articleIds = '';
     if (searchField) {
         searchField = removeVN(searchField);
         keyword = new RegExp(
@@ -75,15 +83,19 @@ const getListArticle = async (data) => {
             'i'
         );
         const listArticle = await Article.find();
-        const articles = listArticle.map((article) => {
-            if (removeVN(article.title).match(keyword)) {
-                return article;
-            }
-        }).filter((itm) => {return !(isEmpty(itm))});
+        const articles = listArticle
+            .map((article) => {
+                if (removeVN(article.title).match(keyword)) {
+                    return article;
+                }
+            })
+            .filter((itm) => {
+                return !isEmpty(itm);
+            });
         articleIds = map(articles, 'id');
     }
-    if(!isEmpty(articleIds)){
-        data._id = { in: articleIds}
+    if (!isEmpty(articleIds)) {
+        data._id = { in: articleIds };
     }
     const queryObj = data;
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -95,10 +107,10 @@ const getListArticle = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-    .sort({ servicePackageId: 'asc', createdAt: 'desc' })
-    .limit(limit)
-    .skip(skip)
-    .exec()
+        .sort({ servicePackageId: 'asc', createdAt: 'desc' })
+        .limit(limit)
+        .skip(skip)
+        .exec();
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
@@ -106,13 +118,14 @@ const getListArticle = async (data) => {
     }).exec();
     const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
-    const objServicePackage = keyBy(servicePackages, '_id')
+    const objServicePackage = keyBy(servicePackages, '_id');
     const article = articles.map((itm) => {
         const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
         const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
-        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
+        const address =
+            street + ', ' + ward.name + ', ' + district.name + ', ' + city.name;
         const servicePackage = objServicePackage[servicePackageId] || {};
         return {
             _id: itm._id,
@@ -136,7 +149,7 @@ const getListArticle = async (data) => {
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
             endDateService: itm.endDateService,
-            servicePackageName: servicePackage.serviceName
+            servicePackageName: servicePackage.serviceName,
         };
     });
     let isOver = false;
@@ -158,7 +171,8 @@ const getListTinTop = async (data) => {
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
     let searchField = data?.keyword || '';
-    let keyword,articleIds = '';
+    let keyword,
+        articleIds = '';
     if (searchField) {
         searchField = removeVN(searchField);
         keyword = new RegExp(
@@ -166,15 +180,19 @@ const getListTinTop = async (data) => {
             'i'
         );
         const listArticle = await Article.find();
-        const articles = listArticle.map((article) => {
-            if (removeVN(article.title).match(keyword)) {
-                return article;
-            }
-        }).filter((itm) => {return !(isEmpty(itm))});
+        const articles = listArticle
+            .map((article) => {
+                if (removeVN(article.title).match(keyword)) {
+                    return article;
+                }
+            })
+            .filter((itm) => {
+                return !isEmpty(itm);
+            });
         articleIds = map(articles, 'id');
     }
-    if(!isEmpty(articleIds)){
-        data._id = { in: articleIds}
+    if (!isEmpty(articleIds)) {
+        data._id = { in: articleIds };
     }
     const queryObj = data;
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -186,10 +204,10 @@ const getListTinTop = async (data) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-    .sort({ createdAt: 'desc' })
-    .limit(limit)
-    .skip(skip)
-    .exec()
+        .sort({ createdAt: 'desc' })
+        .limit(limit)
+        .skip(skip)
+        .exec();
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
@@ -197,13 +215,14 @@ const getListTinTop = async (data) => {
     }).exec();
     const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
-    const objServicePackage = keyBy(servicePackages, '_id')
+    const objServicePackage = keyBy(servicePackages, '_id');
     const article = articles.map((itm) => {
         const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
         const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
-        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
+        const address =
+            street + ', ' + ward.name + ', ' + district.name + ', ' + city.name;
         const servicePackage = objServicePackage[servicePackageId] || {};
         return {
             _id: itm._id,
@@ -227,7 +246,7 @@ const getListTinTop = async (data) => {
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
             endDateService: itm.endDateService,
-            servicePackageName: servicePackage.serviceName
+            servicePackageName: servicePackage.serviceName,
         };
     });
     let isOver = false;
@@ -275,10 +294,24 @@ const deleteArticle = async (data) => {
 };
 const getDetailArticle = async (data) => {
     const articleId = data.articleId;
-    const result = await Article.findOne({ _id: articleId }).populate(
+    const article = await Article.findOne({ _id: articleId }).populate(
         'lessor',
         '_id fullname email phoneNumber avatar createdAt isAutoApproved'
     );
+    const city = await Location.findOne({ code: 79 });
+    const objDistrict = keyBy(city.districts, 'code');
+    const district = objDistrict[article.district] || {};
+    const objWard = keyBy(district.wards, 'code');
+    const ward = objWard[article.ward] || {};
+    const address =
+        article.street +
+        ', ' +
+        ward.name +
+        ', ' +
+        district.name +
+        ', ' +
+        city.name;
+    const result = { ...article._doc, address };
     return result;
 };
 
@@ -292,7 +325,7 @@ const searchArticle = async (data) => {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     //data.isDeleted = (data?.isDeleted === 'true') ? true : false;
-    data.isApproved = (data?.isApproved === 'true') ? true : false;
+    data.isApproved = data?.isApproved === 'true' ? true : false;
     const skip = (page - 1) * limit;
     let searchField = data?.keyword || '';
     let keyword = '';
@@ -323,7 +356,7 @@ const searchArticle = async (data) => {
     return {
         listData: result,
         total: count,
-        isOver
+        isOver,
     };
 };
 
@@ -340,7 +373,9 @@ const updateServicePackage = async (data) => {
                 'Vui lòng chọn số ngày gói dịch vụ nhỏ hơn số ngày còn lại của bài đăng',
         };
     }
-    const servicePackage = await ServicePackage.findOne({ serviceName: data.servicePackageName });
+    const servicePackage = await ServicePackage.findOne({
+        serviceName: data.servicePackageName,
+    });
     const updateData = {
         startDateService: currentTime,
         endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
@@ -361,39 +396,36 @@ const paymentServicePackage = async (req, lessorId, data) => {
         servicePackageName: data.servicePackageName,
         transactionAmount: data.prices,
         status: 'WAITFORPAYMENT',
-    }
+    };
     const transaction = await ServicePackageTransaction.create(saveData);
-    const orderDescription = `${data.servicePackageName}-${data.numOfDate}-${lessorId}-${transaction.transactionId}-${data.articleId}`
+    const orderDescription = `${data.servicePackageName}-${data.numOfDate}-${lessorId}-${transaction.transactionId}-${data.articleId}`;
     const transactionData = {
-        typeOrders: "payment",
+        typeOrders: 'payment',
         amount: `${~~data.prices}`,
-        bankCode: "NCB",
+        bankCode: 'NCB',
         orderDescription: orderDescription,
-        language: "vn",
+        language: 'vn',
         typeCart: 'CLIENT',
         //servicePackage: data.servicePackageId,
         lessor: lessorId,
     };
-    const resultPayment = await VNPayService.payment(
-        req,
-        transactionData,
-    );
+    const resultPayment = await VNPayService.payment(req, transactionData);
     if (resultPayment.success) {
         return {
             success: true,
-            message: "Thanh toán thành công",
+            message: 'Thanh toán thành công',
             data: resultPayment.data.url,
             status: 200,
         };
     } else {
         return {
             success: false,
-            message: "Thanh toán thất bại",
+            message: 'Thanh toán thất bại',
             data: resultPayment.data.url,
             status: 200,
         };
     }
-}
+};
 const savePaymentResult = async (data) => {
     try {
         let vnp_Params = {
@@ -420,33 +452,36 @@ const savePaymentResult = async (data) => {
             numOfDate,
             servicePackageName,
             articleId,
-        }
+        };
         if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
             const updateArticle = await updateServicePackage(reqData);
-            const updateTransaction = await ServicePackageTransaction.updateOne({ transactionId: transactionId }, { status: 'SUCCESS' })
+            const updateTransaction = await ServicePackageTransaction.updateOne(
+                { transactionId: transactionId },
+                { status: 'SUCCESS' }
+            );
             return {
                 success: true,
                 data: updateArticle.data,
-                message: "Thanh toán thành công",
+                message: 'Thanh toán thành công',
                 status: 200,
-            }
+            };
         }
         return {
             success: false,
-            message: "Thanh toán thất bại",
+            message: 'Thanh toán thất bại',
             status: 300,
-        }
+        };
     } catch {
         return {
             success: false,
-            message: "Thanh toán thất bại",
+            message: 'Thanh toán thất bại',
             status: 500,
-        }
+        };
     }
-}
+};
 const getAllArticle = async (data) => {
-    data.isDelete = (data?.isDelete === 'true') ? true : false;
-    data.isApproved = (data?.isApproved === 'true') ? true : false;
+    data.isDelete = data?.isDelete === 'true' ? true : false;
+    data.isApproved = data?.isApproved === 'true' ? true : false;
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
@@ -463,7 +498,7 @@ const getAllArticle = async (data) => {
         .sort({ servicePackageId: 'asc', createdAt: 'desc' })
         .limit(limit)
         .skip(skip)
-        .exec()
+        .exec();
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
@@ -471,13 +506,14 @@ const getAllArticle = async (data) => {
     }).exec();
     const city = await Location.findOne({ code: 79 });
     const objDistrict = keyBy(city.districts, 'code');
-    const objServicePackage = keyBy(servicePackages, '_id')
+    const objServicePackage = keyBy(servicePackages, '_id');
     const article = articles.map((itm) => {
         const { servicePackageId, street } = itm;
         const district = objDistrict[itm.district] || {};
         const objWard = keyBy(district.wards, 'code');
         const ward = objWard[itm.ward] || {};
-        const address = street + ', ' + ward.name + ', ' + district.name + ', ' + city.name
+        const address =
+            street + ', ' + ward.name + ', ' + district.name + ', ' + city.name;
         const servicePackage = objServicePackage[servicePackageId] || {};
         return {
             _id: itm._id,
@@ -501,7 +537,7 @@ const getAllArticle = async (data) => {
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
             endDateService: itm.endDateService,
-            servicePackageName: servicePackage.serviceName
+            servicePackageName: servicePackage.serviceName,
         };
     });
     let isOver = false;
@@ -514,7 +550,7 @@ const getAllArticle = async (data) => {
         isOver: isOver,
     };
     return result;
-}
+};
 module.exports = {
     createArticle,
     getListArticle,
