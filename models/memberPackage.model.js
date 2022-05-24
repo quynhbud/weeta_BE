@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const MemberPackageSchema = mongoose.Schema(
     {
-        serviceName: {
+        memberPackageName: {
             type: String,
         },
         articlePerMonth: Number,
