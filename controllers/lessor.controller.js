@@ -40,15 +40,15 @@ const createLessor = catchAsync(async (req, res) => {
 const getListArticles = catchAsync(async (req, res) => {
     const id = req.user._id;
     const query = req.query;
-    const articles = await lessorService.getListArticle({ id, ...query });
-    if (!articles) {
+    const result = await lessorService.getListArticle({ id, ...query });
+    if (result.status !=200) {
         return sendError(
             res,
             httpStatus.BAD_REQUEST,
-            'Không có bài đăng tin nào'
+            result.message,
         );
     }
-    return sendSuccess(res, articles, httpStatus.OK, 'Lấy list thành công');
+    return sendSuccess(res, result.data, httpStatus.OK, result.message);
 });
 
 const uploadIDCard = catchAsync(async (req, res) => {

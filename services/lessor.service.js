@@ -1,4 +1,4 @@
-const { Account, Lessor, MemberPackageTransaction, ServicePackageTransaction } = require('../models/index');
+const { Account, Article, Lessor, MemberPackageTransaction, ServicePackageTransaction } = require('../models/index');
 const SendOTPService = require('./sendOTP.service');
 
 function generateRandomNumber() {
@@ -28,28 +28,40 @@ const createLessor = async (id) => {
 };
 
 const getListArticle = async (data) => {
-  const { page, limit, id, keyword, ...rest } = data;
-  const currentPage = page || 1;
-  const currentLimit = limit || 10;
-  const skip = (currentPage - 1) * currentLimit;
-  const articles = await Article.find({
-    lessor: id,
-    title: { $regex: keyword || '', $options: 'i' },
-    ...rest,
-  })
-    .sort({ createdAt: 'desc' })
-    .skip(skip)
-    .limit(currentLimit)
-    .exec();
-  const total = await Article.find({
-    lessor: id,
-    title: { $regex: keyword || '', $options: 'i' },
-    ...rest,
-  }).count();
-  return {
-    articles,
-    total,
-  };
+  try {
+    const { page, limit, id, keyword, ...rest } = data;
+    const currentPage = page || 1;
+    const currentLimit = limit || 10;
+    const skip = (currentPage - 1) * currentLimit;
+    const articles = await Article.find({
+      lessor: id,
+      title: { $regex: keyword || '', $options: 'i' },
+      ...rest,
+    })
+      .sort({ createdAt: 'desc' })
+      .skip(skip)
+      .limit(currentLimit)
+      .exec();
+    const total = await Article.find({
+      lessor: id,
+      title: { $regex: keyword || '', $options: 'i' },
+      ...rest,
+    }).count();
+    return {
+      data: {
+        articles, 
+        total
+      },
+      status: 200,
+      message: 'Lấy danh sách tin cho thuê thành công'
+    };
+  } catch {
+    return {
+      status: 500,
+      message: 'Lấy danh sách tin cho thuê không thành công'
+    }
+  }
+
 };
 
 const getListTransaction = async (data, lessorId) => {
