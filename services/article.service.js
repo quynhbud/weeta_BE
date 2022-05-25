@@ -360,7 +360,6 @@ const searchArticle = async (data) => {
     .skip(skip)
     .limit(limit)
     .exec();
-  console.log("result", result)
   const count = await Article.find({ _id: { $in: articleIds } }).count();
   let isOver = false;
   if (page * limit >= count || isEmpty(result)) {

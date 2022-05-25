@@ -3,7 +3,7 @@ const lessorController = require('../../controllers/lessor.controller');
 const auth = require('../../middlewares/auth');
 const multer = require('multer');
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single('file');
+const upload = multer({ storage: storage }).array('files',12);
 
 const router = express.Router();
 router.post('/identifyPhoneNumber', auth(),lessorController.identifyPhoneNumber);

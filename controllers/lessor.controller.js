@@ -53,8 +53,8 @@ const getListArticles = catchAsync(async (req, res) => {
 
 const uploadIDCard = catchAsync(async (req, res) => {
     const id = req.user._id;
-    const image = await imageService.addImage(req.file);
-    const account = await accountService.updateIDCard(id, image.data);
+    const image = await imageService.addMultiImage(req.files);
+    const account = await accountService.updateIDCard(id, image);
     sendSuccess(res, account, httpStatus.OK, 'Cập nhật ID Card thành công');
 });
 

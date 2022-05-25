@@ -90,8 +90,7 @@ const AccountSchema = mongoose.Schema(
             default: false,
         },
         IDCard: {
-            type: String,
-            default: '',
+            type: [String],
         },
         saveArticle: [
             {
