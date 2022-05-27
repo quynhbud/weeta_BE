@@ -14,6 +14,11 @@ const LessorSchema = mongoose.Schema(
             require: false,
             default: '623ebe63be8ccfccc67bd97a',
         },
+        memberPackage: {
+            type: String,
+            enum: ['FREE', 'SAVE', 'STANDARD', 'PREMIUM'],
+            default: 'FREE',
+        },
         articleTotal: {
             type: Number,
             default: 3,
