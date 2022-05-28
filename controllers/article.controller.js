@@ -130,7 +130,14 @@ const getAllArticle = catchAsync(async (req, res) => {
   }
   return sendSuccess(res, listArticle, httpStatus.OK, 'Lấy toàn bộ danh sách thành công');
 })
-
+const getSaveArticle = catchAsync(async (req, res) => {
+  const accountId = req.user._id;
+  const result = await articleService.getSaveArticle(req.query, accountId);
+  if (result.status !== 200) {
+    return sendError(res, httpStatus.BAD_REQUEST, 'Lấy danh sách tin đăng yêu thích thất bại')
+  }
+  return sendSuccess(res, result.data, httpStatus.OK, 'Lấy danh sách tin đăng yêu thích thành công');
+})
 module.exports = {
   createArticle,
   getListArticle,
@@ -145,4 +152,5 @@ module.exports = {
   savePaymentResult,
   getIPN,
   getAllArticle,
+  getSaveArticle,
 }
