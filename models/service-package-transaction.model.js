@@ -15,6 +15,12 @@ const ServiceTransactionSchema = new mongoose.Schema(
         status: {
             type: String,
         },
+        numOfDate: {
+            type: Number,
+        },
+        paymentMethod: {
+            type: String,
+        }
     },
     {
         timestamps: true,

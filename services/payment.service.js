@@ -17,6 +17,7 @@ const paymentPackage = async (req, lessorId, data) => {
             lessorId: lessorId,
             memberPackageName: data.memberPackageName,
             transactionAmount: data.prices,
+            paymentMethod: data.paymentMethod,
             status: 'WAITFORPAYMENT',
         };
         const transaction = await MemberPackageTransaction.create(saveData);
@@ -39,6 +40,8 @@ const paymentPackage = async (req, lessorId, data) => {
             articleId: data.articleId,
             servicePackageName: data.servicePackageName,
             transactionAmount: data.prices,
+            paymentMethod: data.paymentMethod,
+            numOfDate: data.numOfDate,
             status: 'WAITFORPAYMENT',
         };
         const transaction = await ServicePackageTransaction.create(saveData);
