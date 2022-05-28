@@ -6,6 +6,7 @@ const {
     ServicePackageTransaction,
 } = require('../models/index');
 const SendOTPService = require('./sendOTP.service');
+const { isEmpty } = require('lodash');
 
 function generateRandomNumber() {
     var minm = 100000;
@@ -90,9 +91,14 @@ const getListTransaction = async (data, lessorId) => {
             lessorId: lessorId,
         }).count();
 
+        let isOver = false;
+        if (currentPage * limit >= total || isEmpty(transactions)) {
+            isOver = true;
+        }
         return {
             transactions,
             total,
+            isOver,
         };
     }
     if (type === 'SERVICEPACKAGE') {
@@ -106,9 +112,14 @@ const getListTransaction = async (data, lessorId) => {
         const total = await ServicePackageTransaction.find({
             lessorId: lessorId,
         }).count();
+        let isOver = false;
+        if (currentPage * limit >= total || isEmpty(transactions)) {
+            isOver = true;
+        }
         return {
             transactions,
             total,
+            isOver,
         };
     }
 };
