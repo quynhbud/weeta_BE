@@ -564,10 +564,10 @@ const getAllArticle = async (data) => {
   return result;
 };
 const getSaveArticle = async (data, accountId) => {
-  try{
+  try {
     const account = await Account.findById(accountId);
     const articleIds = account.saveArticle;
-    data.saveArticle = { in: articleIds };
+    data._id = { in: articleIds };
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
     const skip = (page - 1) * limit;
@@ -581,14 +581,14 @@ const getSaveArticle = async (data, accountId) => {
     );
     const queryString = JSON.parse(queryStr);
     const articles = await Article.find(queryString)
-    .populate(
-      'lessor',
-      '_id fullname email phoneNumber avatar createdAt isAutoApproved'
-    )
-    .sort({ servicePackageId: 'asc', createdAt: 'desc' })
-    .limit(limit)
-    .skip(skip)
-    .exec();
+      .populate(
+        'lessor',
+        '_id fullname email phoneNumber avatar createdAt isAutoApproved'
+      )
+      .sort({ servicePackageId: 'asc', createdAt: 'desc' })
+      .limit(limit)
+      .skip(skip)
+      .exec();
     const totalArticle = await Article.find(queryString).count();
     const servicePackageIds = map(articles, 'servicePackageId');
     const servicePackages = await ServicePackage.find({
@@ -636,9 +636,11 @@ const getSaveArticle = async (data, accountId) => {
     }
     const result = {
       status: 200,
-      data: article,
-      total: totalArticle,
-      isOver: isOver,
+      data: {
+        article,
+        total: totalArticle,
+        isOver: isOver,
+      }
     };
     return result;
   } catch {
@@ -647,7 +649,7 @@ const getSaveArticle = async (data, accountId) => {
       message: 'Lấy danh sách không thành công'
     }
   }
-  
+
 };
 module.exports = {
   createArticle,
