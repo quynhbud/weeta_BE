@@ -507,6 +507,10 @@ const getAllArticle = async (data) => {
   );
   const queryString = JSON.parse(queryStr);
   const articles = await Article.find(queryString)
+    .populate(
+      'lessor',
+      '_id fullname email phoneNumber avatar createdAt isAutoApproved'
+    )
     .sort({ servicePackageId: 'asc', createdAt: 'desc' })
     .limit(limit)
     .skip(skip)
@@ -557,9 +561,12 @@ const getAllArticle = async (data) => {
     isOver = true;
   }
   const result = {
-    data: article,
-    total: totalArticle,
-    isOver: isOver,
+    status: 200,
+    data: {
+      article,
+      total: totalArticle,
+      isOver: isOver,
+    }
   };
   return result;
 };
@@ -603,7 +610,13 @@ const getSaveArticle = async (data, accountId) => {
       const objWard = keyBy(district.wards, 'code');
       const ward = objWard[itm.ward] || {};
       const address =
-        street + ', ' + ward.name + ', ' + district.name + ', ' + city.name;
+        street +
+        ', ' +
+        ward.name +
+        ', ' +
+        district.name +
+        ', ' +
+        city.name;
       const servicePackage = objServicePackage[servicePackageId] || {};
       return {
         _id: itm._id,
@@ -637,19 +650,18 @@ const getSaveArticle = async (data, accountId) => {
     const result = {
       status: 200,
       data: {
-        article,
+        saveArticle: article,
         total: totalArticle,
         isOver: isOver,
-      }
+      },
     };
     return result;
   } catch {
     return {
       status: 500,
-      message: 'Lấy danh sách không thành công'
-    }
+      message: 'Lấy danh sách không thành công',
+    };
   }
-
 };
 module.exports = {
   createArticle,
