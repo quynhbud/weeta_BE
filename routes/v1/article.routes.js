@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/getListArticle',articleController.getListArticle);
 router.post('/createArticle',auth(),upload, articleController.createArticle);
-router.put('/updateArticle/:articleId',auth(), articleController.updateArticle)
+router.put('/updateArticle/:articleId',auth(),upload, articleController.updateArticle)
 router.get('/searchArticle', articleController.searchArticle);
 router.get('/detailArticle/:articleId', articleController.getDetailArticle);
 router.get('/get-list-tin-top', articleController.getListTinTop);

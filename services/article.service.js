@@ -287,11 +287,26 @@ const createService = async (accountId, data) => {
   return Article.create(article);
 };
 const updateArticle = async (data) => {
+  if(data?.imageURLs) {
+    data.image = data.image.concat(data.imageURLs);
+    console.log(data.image);
+  }
   const updateArticle = await Article.updateOne(
     { _id: data.articleId },
     data
   );
-  return updateArticle;
+  if(updateArticle.modifiedCount>0){
+    const article =  await Article.findById(data.articleId);
+    return {
+      article,
+      status: 200,
+      mesage: 'Cập nhật thành công'
+    }
+  }
+  return {
+    status: 400,
+    message: 'Cập nhật không thành công'
+  }
 };
 const deleteArticle = async (data) => {
   const deleteArticle = await Article.updateOne(

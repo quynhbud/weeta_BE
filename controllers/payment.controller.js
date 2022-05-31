@@ -17,18 +17,30 @@ const paymentPackage = catchAsync(async (req, res) => {
 });
 
 const paymentWithMomo = catchAsync(async (req, res) => {
-    const result = await MomoService.paymentWithMomo();
+    const lessorId = req.user._id;
+    const result = await PaymentPackageService.paymentWithMomo(req.body, lessorId);
+    // console.log("result", result)
+    // if (result.status != 200) {
+    //     return sendError(res, result.status, result.message);
+    // }
+    // return sendSuccess(res, result.data, result.status, result.message);
 })
 const savePaymentMomo = catchAsync(async(req, res) => {
-    const result = await MomoService.savePaymentMomo(req.query);
-    if(result.status !== 200) {
+    const result = await PaymentPackageService.savePaymentMomo(req.query);
+    if (result.status != 200) {
+        return sendError(res, result.status, result.message);
+    }
+    const { type, articleId, paymentId } = result;
+    if (type === 'SERVICEPACKAGE') {
         res.writeHead(301, {
-            Location: `https://google.com`,
+            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`,
         }).end();
     }
-    res.writeHead(301, {
-        Location: `https://weeta-housing.vercel.app/`,
-    }).end();
+    if (type === 'MEMBERPACKAGE') {
+        res.writeHead(301, {
+            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=MEMBERPACKAGE&paymentId=${paymentId}`,
+        }).end();
+    }
 
 })
 

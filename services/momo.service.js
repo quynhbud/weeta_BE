@@ -58,6 +58,7 @@ const paymentWithMomo = async () => {
     }
   }
   //Send the request and get the response
+ //Send the request and get the response
   const req = https.request(options, res => {
     console.log(`Status: ${res.statusCode}`);
     console.log(`Headers: ${JSON.stringify(res.headers)}`);
@@ -81,6 +82,7 @@ const paymentWithMomo = async () => {
   req.write(requestBody);
   req.end();
 }
+
 const savePaymentMomo = async(data) => {
   try {
     console.log(data);

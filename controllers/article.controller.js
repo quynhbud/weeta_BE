@@ -22,8 +22,13 @@ const createdService = catchAsync(async (req, res) => {
 });
 const updateArticle = catchAsync(async (req, res) => {
   const articleId = req.params;
-  const article = await articleService.updateArticle(req.body, articleId);
-  sendSuccess(res, article, httpStatus.CREATED, 'Article updated successfully');
+  const imageURLs = await imageService.addMultiImage(req.files);
+  const reqData = (!isEmpty(imageURLs)) ? {...req.body, ...articleId, imageURLs} : {...req.body, ...articleId}
+  const result = await articleService.updateArticle(reqData);
+  if(result.status !== 200){
+    return sendError(res, result.status, result.message);
+  }
+  sendSuccess(res, result.article, result.status, result.message);
 });
 const deleteArticle = catchAsync(async (req, res) => {
   const articleId = req.params;
