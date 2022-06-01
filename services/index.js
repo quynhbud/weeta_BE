@@ -13,3 +13,4 @@ module.exports.AdminService = require('./admin.service');
 module.exports.VNPayService = require('./VNPay.service');
 module.exports.MomoService = require('./momo.service');
 module.exports.PaymentPackageSerivce = require('./payment.service');
+module.exports.ReviewService = require('./review.service');

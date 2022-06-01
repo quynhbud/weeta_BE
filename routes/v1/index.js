@@ -9,6 +9,7 @@ const locationRoute = require('./location.routes');
 const imageRoute = require('./image.routes');
 const adminRoute = require('./admin.routes');
 const paymentRoute = require('./payment.routes')
+const reviewRoute = require('./review.routes')
 
 const router = express.Router();
 
@@ -52,7 +53,11 @@ const defaultRoutes = [
   {
     path: '/payment',
     route: paymentRoute,
-  }
+  },
+  {
+    path: '/review',
+    route: reviewRoute,
+  },
 ];
 
 defaultRoutes.forEach((route) => {
