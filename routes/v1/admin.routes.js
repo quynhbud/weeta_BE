@@ -10,4 +10,5 @@ router.get('/get-list-user', auth(), AdminController.getListUser)
 router.get('/get-list-lessor', auth(), AdminController.getListLessor)
 router.delete('/delete-account/:accountId', auth(), AdminController.deleteAccount)
 router.get('/article-of-week', AdminController.articleOfWeek)
+router.get('/statistical-transaction', AdminController.statisticalTransaction)
 module.exports = router;

@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
-const { isEmpty, groupBy } = require('lodash');
-const { Account, Article } = require('../models/index');
+const { isEmpty, groupBy, sum, map } = require('lodash');
+const { Account, Article, MemberPackageTransaction, ServicePackageTransaction } = require('../models/index');
 const AppError = require('../utils/appError');
 const moment = require('moment');
 
@@ -115,6 +115,45 @@ const articleOfWeek = async () => {
     message: 'Lấy số bài đăng trong 1 ngày thành công'
   }
 }
+const statisticalTransaction = async (data) => {
+  const startDate = moment()
+    .subtract(12, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+  const endDate = moment().endOf('month').format('YYYY-MM-DD HH:59:59');
+  const arrKey = Array.from(
+    { length: 12 },
+    (_, i) =>
+      moment()
+        .subtract(11 - i, 'month')
+        .month() + 1,
+  );
+  let transactions = [];
+  if(data.type === 'MEMBERPACKAGE'){
+     transactions = await MemberPackageTransaction
+    .find({createdAt:{ $gte: startDate , $lte: endDate }, status: 'SUCCESS'});
+  }
+  if(data.type === 'SERVICEPACKAGE'){
+    transactions = await ServicePackageTransaction
+    .find({createdAt:{ $gte: startDate , $lte: endDate }, status: 'SUCCESS'});
+  }
+  const objTransaction = groupBy(transactions, (itm) => {
+    const { createdAt } = itm;
+    return numOfType = moment(createdAt).get('month') + 1;
+  });
+  const result = arrKey.map((num) => {
+    const transactions = objTransaction[num] || [];
+    return {
+      time: num,
+      value: sum(map(transactions, 'transactionAmount')) || 0,
+    };
+  });
+  return  {
+    status: 200,
+    data: result,
+    message: 'Lấy doanh thu trong 1 thang thành công'
+  }
+}
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -122,4 +161,5 @@ module.exports = {
   getListLessor,
   deleteAccount,
   articleOfWeek,
+  statisticalTransaction,
 };

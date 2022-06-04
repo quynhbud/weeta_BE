@@ -57,6 +57,13 @@ const articleOfWeek  = catchAsync(async(req, res) => {
   }
   sendSuccess(res, result.data, result.status, result.message);
 })
+const statisticalTransaction  = catchAsync(async(req, res) => {
+  const result = await AdminService.statisticalTransaction(req.query);
+  if(result.status !== 200) {
+    return sendError(res, result.status, 'Lỗi');
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -64,5 +71,6 @@ module.exports = {
   getListLessor,
   deleteAccount,
   rejectArticle,
-  articleOfWeek
+  articleOfWeek,
+  statisticalTransaction
 }
