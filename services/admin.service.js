@@ -1,8 +1,8 @@
 const httpStatus = require('http-status');
-const { isEmpty } = require('lodash');
+const { isEmpty, groupBy } = require('lodash');
 const { Account, Article } = require('../models/index');
 const AppError = require('../utils/appError');
-
+const moment = require('moment');
 
 const approvedArticle = async (articleId) => {
   const article = await Article.findById(articleId);
@@ -12,24 +12,24 @@ const approvedArticle = async (articleId) => {
       status: httpStatus.BAD_REQUEST,
     }
   }
-  const update = await Article.updateOne({_id: articleId},{isApproved: true});
+  const update = await Article.updateOne({ _id: articleId }, { isApproved: true });
   return update;
 };
 
 const approvedIDCard = async (accountId) => {
-  const update = await Account.updateOne({_id: accountId},{isAutoApproved: true});
+  const update = await Account.updateOne({ _id: accountId }, { isAutoApproved: true });
   const account = await Account.findById(accountId);
   return account;
 };
-const getListUser = async(data) => {
+const getListUser = async (data) => {
   try {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     const skip = (page - 1) * limit;
-    const users = await Account.find({role: 'user', isDelete: false})
-    .skip(skip)
-    .limit(limit);
-    const total = await Account.find({role: 'user', isDelete: false}).count();
+    const users = await Account.find({ role: 'user', isDelete: false })
+      .skip(skip)
+      .limit(limit);
+    const total = await Account.find({ role: 'user', isDelete: false }).count();
     const result = {
       users: users,
       total: total,
@@ -46,15 +46,15 @@ const getListUser = async(data) => {
     }
   }
 }
-const getListLessor = async(data) => {
+const getListLessor = async (data) => {
   try {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     const skip = (page - 1) * limit;
-    const lessor = await Account.find({role: 'lessor', isDelete: false})
-    .skip(skip)
-    .limit(limit);
-    const total = await Account.find({role: 'lessor', isDelete: false}).count();
+    const lessor = await Account.find({ role: 'lessor', isDelete: false })
+      .skip(skip)
+      .limit(limit);
+    const total = await Account.find({ role: 'lessor', isDelete: false }).count();
     const result = {
       users: lessor,
       total: total,
@@ -71,9 +71,9 @@ const getListLessor = async(data) => {
     }
   }
 }
-const deleteAccount = async(data) => {
+const deleteAccount = async (data) => {
   try {
-    const account = await Account.findOneAndUpdate({_id: data},{isDelete: true})
+    const account = await Account.findOneAndUpdate({ _id: data }, { isDelete: true })
     return {
       data: account,
       status: 200,
@@ -86,12 +86,40 @@ const deleteAccount = async(data) => {
     }
   }
 }
-
-
+const articleOfWeek = async () => {
+  const startDate = moment()
+    .subtract(7, 'day')
+    .startOf('day')
+    .format('YYYY-MM-DD HH:00:00');
+  const endDate = moment().endOf('day').format('YYYY-MM-DD HH:59:59');
+  const arrKey = Array.from({ length: 7 }, (_, i) =>
+    moment()
+      .subtract(6 - i, 'day')
+      .date(),
+  );
+  const articles =  await Article.find({ createdAt: { $gte: startDate , $lte: endDate }});
+  const objArticle = groupBy(articles, (itm) => {
+    const { createdAt } = itm;
+    return numOfType = moment(createdAt).get('date');
+  });
+  const result = arrKey.map((num) => {
+    const articles = objArticle[num] || [];
+    return {
+      time: num,
+      value: articles.length,
+    };
+  });
+  return  {
+    status: 200,
+    data: result,
+    message: 'Lấy số bài đăng trong 1 ngày thành công'
+  }
+}
 module.exports = {
   approvedArticle,
   approvedIDCard,
   getListUser,
   getListLessor,
   deleteAccount,
+  articleOfWeek,
 };

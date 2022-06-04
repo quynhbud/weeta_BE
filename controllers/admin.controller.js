@@ -50,11 +50,19 @@ const deleteAccount = catchAsync(async(req, res) => {
   }
   sendSuccess(res, result.data, result.status, result.message);
 })
+const articleOfWeek  = catchAsync(async(req, res) => {
+  const result = await AdminService.articleOfWeek();
+  if(result.status !== 200) {
+    return sendError(res, result.status, 'Lỗi');
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
 module.exports = {
   approvedArticle,
   approvedIDCard,
   getListUser,
   getListLessor,
   deleteAccount,
-  rejectArticle
+  rejectArticle,
+  articleOfWeek
 }

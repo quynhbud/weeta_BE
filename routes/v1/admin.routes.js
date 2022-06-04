@@ -9,4 +9,5 @@ router.post('/approvedIDCard/:id',auth(), AdminController.approvedIDCard )
 router.get('/get-list-user', auth(), AdminController.getListUser)
 router.get('/get-list-lessor', auth(), AdminController.getListLessor)
 router.delete('/delete-account/:accountId', auth(), AdminController.deleteAccount)
+router.get('/article-of-week', AdminController.articleOfWeek)
 module.exports = router;

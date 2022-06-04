@@ -113,9 +113,9 @@ const savePaymentResult = async (data) => {
       if (Number(vnp_Params.vnp_TransactionStatus) === 0) {
         const updateLessor = await updateMemberPackage(reqData);
         const updateTransaction =
-          await MemberPackageTransaction.updateOne(
-            { _id: transactionId },
-            { status: 'SUCCESS' }
+        await MemberPackageTransaction.updateOne(
+          { _id: transactionId },
+          { status: 'SUCCESS' }
           );
         return {
           success: true,
@@ -180,8 +180,8 @@ const savePaymentResult = async (data) => {
 const updateMemberPackage = async (data) => {
   const memberPackage = await MemberPackage.findById(data.memberPackageId);
   const updateData = {
-    memberPackageId: data.memberPackageId,
-    memberPackage: memberPackageName,
+    memberPackageId: memberPackage._id,
+    memberPackage: memberPackage.memberPackageName,
     articleTotal: memberPackage.articlePerMonth,
     articleUsed: 0,
   };
