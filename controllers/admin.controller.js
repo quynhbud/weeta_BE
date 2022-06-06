@@ -8,17 +8,19 @@ const { isEmpty } = require('lodash');
 
 const approvedArticle = catchAsync(async (req, res) => {
   const articleId = req.params.id; //id: articleId
+  const email = req.body.email;
   const article = await AdminService.approvedArticle(articleId);
   if (!article) {
     return sendError(res, httpStatus.NOT_FOUND, 'Chấp nhận tin đăng thất bại');
   }
-  await emailService.sendAcceptArticleEmail(articleId);
+  await emailService.sendAcceptArticleEmail(email, articleId);
   sendSuccess(res, article, httpStatus.CREATED, 'Chấp nhận tin đăng thành công');
 });
 const rejectArticle = catchAsync(async (req, res) => {
   const articleId = req.params.id; //id: articleId
   const reasonReject = req.body.reasonReject;
-  await emailService.sendRejectArticleEmail(articleId, reasonReject);
+  const email = req.body.email;
+  await emailService.sendRejectArticleEmail(email, articleId, reasonReject);
   sendSuccess(res, articleId, httpStatus.OK, 'Từ chối tin đăng thành công');
 });
 const approvedIDCard = catchAsync(async(req, res) => {

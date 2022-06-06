@@ -4,7 +4,7 @@ const logger = require('../config/logger');
 const htmlEmailConfirm = require('../constant/confirmEmail');
 const htmlResetPassword = require('../constant/resetPassEmail');
 const htlmRejectArticle = require('../constant/rejectArticleEmail');
-//const htlmAcceptArticle = require('../constant/acceptArticleEmail');
+const htlmAcceptArticle = require('../constant/acceptArticleEmail');
 const htmlWelcome = require('../constant/welcomeEmail');
 //const htmlReject = require('../constant/rejectEmail');
 const htmlApprove = require('../constant/approveEmail');
@@ -103,7 +103,7 @@ const sendRejectBusinessEmail = async (to) => {
  */
  const sendRejectArticleEmail = async (to, id, reasonReject) => {
     const subject = 'Từ chối bài viết';
-    const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`;// cho nay m keu de m gui lai sau
+    const articleUrl = `${config.frontEndUrl}/bai-dang/${id}`;
     const html = htlmRejectArticle(articleUrl, reasonReject);
     await sendEmail(to, subject, '', html);
 };
@@ -115,7 +115,7 @@ const sendRejectBusinessEmail = async (to) => {
  */
  const sendAcceptArticleEmail = async (to, id) => {
     const subject = 'Duyệt bài viết';
-    const articleUrl = `${config.frontEndUrl}/xac-thuc?token=${id}`; // cho nay m keu de m gui lai sau
+    const articleUrl = `${config.frontEndUrl}/bai-dang/${id}`;
     const html = htlmAcceptArticle(id, articleUrl);
     await sendEmail(to, subject, '', html);
 };
