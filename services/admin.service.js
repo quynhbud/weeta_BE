@@ -18,7 +18,7 @@ const approvedArticle = async (articleId) => {
 
 const approvedIDCard = async (accountId) => {
   const update = await Account.updateOne({ _id: accountId }, { isAutoApproved: true });
-  await Lessor.updateMany({account: accountId, isNeedAutoApproved: false});
+  await Lessor.updateMany({account: accountId}, {isNeedAutoApproved: false});
   const account = await Account.findById(accountId);
   return account;
 };

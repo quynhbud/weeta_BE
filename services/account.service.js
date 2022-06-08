@@ -154,7 +154,7 @@ const updateAvatar = async (id, avatar) => {
 const updateIDCard = async (id, IDCard) => {
     await Account.updateOne({ _id: id }, { IDCard: IDCard });
     const account = await Account.findById(id);
-    await Lessor.updateOne({account: id, isNeedAutoApproved: true})
+    await Lessor.updateOne({account: id},{isNeedAutoApproved: true})
     return account;
 };
 
