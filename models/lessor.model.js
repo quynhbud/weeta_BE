@@ -27,7 +27,7 @@ const LessorSchema = mongoose.Schema(
             type: Number,
             default: 0,
         },
-        isApproved: {
+        isNeedAutoApproved: {
             type: Boolean,
             default: false,
         },

@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { isEmpty, groupBy, sum, map } = require('lodash');
-const { Account, Article, MemberPackageTransaction, ServicePackageTransaction } = require('../models/index');
+const { Account, Article, MemberPackageTransaction, ServicePackageTransaction, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
 const moment = require('moment');
 
@@ -18,6 +18,7 @@ const approvedArticle = async (articleId) => {
 
 const approvedIDCard = async (accountId) => {
   const update = await Account.updateOne({ _id: accountId }, { isAutoApproved: true });
+  await Lessor.updateMany({account: accountId, isNeedAutoApproved: false});
   const account = await Account.findById(accountId);
   return account;
 };
@@ -97,7 +98,7 @@ const articleOfWeek = async () => {
       .subtract(6 - i, 'day')
       .date(),
   );
-  const articles =  await Article.find({ createdAt: { $gte: startDate , $lte: endDate }});
+  const articles = await Article.find({ createdAt: { $gte: startDate, $lte: endDate } });
   const objArticle = groupBy(articles, (itm) => {
     const { createdAt } = itm;
     return numOfType = moment(createdAt).get('date');
@@ -109,7 +110,7 @@ const articleOfWeek = async () => {
       value: articles.length,
     };
   });
-  return  {
+  return {
     status: 200,
     data: result,
     message: 'Lấy số bài đăng trong 1 ngày thành công'
@@ -129,13 +130,13 @@ const statisticalTransaction = async (data) => {
         .month() + 1,
   );
   let transactions = [];
-  if(data.type === 'MEMBERPACKAGE'){
-     transactions = await MemberPackageTransaction
-    .find({createdAt:{ $gte: startDate , $lte: endDate }, status: 'SUCCESS'});
+  if (data.type === 'MEMBERPACKAGE') {
+    transactions = await MemberPackageTransaction
+      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
-  if(data.type === 'SERVICEPACKAGE'){
+  if (data.type === 'SERVICEPACKAGE') {
     transactions = await ServicePackageTransaction
-    .find({createdAt:{ $gte: startDate , $lte: endDate }, status: 'SUCCESS'});
+      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
   const objTransaction = groupBy(transactions, (itm) => {
     const { createdAt } = itm;
@@ -148,10 +149,37 @@ const statisticalTransaction = async (data) => {
       value: sum(map(transactions, 'transactionAmount')) || 0,
     };
   });
-  return  {
+  return {
     status: 200,
     data: result,
     message: 'Lấy doanh thu trong 1 thang thành công'
+  }
+}
+const listLessorNeedAutoApproved = async (data) => {
+  try {
+    const page = data?.page * 1 || 1;
+    const limit = data?.limit * 1 || 10;
+    const skip = (page - 1) * limit;
+    const listLessor = await Lessor.find({ isNeedAutoApproved: true })
+    const accountIds = map(listLessor, 'account');
+    const accounts = await Account.find({ _id: { $in: accountIds } })
+      .skip(skip)
+      .limit(limit);
+    const total = await Account.find({ _id: { $in: accountIds } }).count();
+    const result = {
+      users: accounts,
+      total: total,
+    }
+    return {
+      data: result,
+      status: 200,
+      message: 'Lấy danh sách lessor cần duyệt id card thành công'
+    }
+  } catch {
+    return {
+      status: 500,
+      message: 'Lấy danh sách lessor cần duyệt id card thất bại'
+    }
   }
 }
 module.exports = {
@@ -162,4 +190,5 @@ module.exports = {
   deleteAccount,
   articleOfWeek,
   statisticalTransaction,
+  listLessorNeedAutoApproved,
 };

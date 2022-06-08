@@ -64,6 +64,13 @@ const statisticalTransaction  = catchAsync(async(req, res) => {
   }
   sendSuccess(res, result.data, result.status, result.message);
 })
+const listLessorNeedAutoApproved = catchAsync(async(req, res) => {
+  const result = await AdminService.listLessorNeedAutoApproved(req.query);
+  if(result.status !== 200) {
+    return sendError(res, result.status, 'Lỗi');
+  }
+  sendSuccess(res, result.data, result.status, result.message);
+})
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -72,5 +79,6 @@ module.exports = {
   deleteAccount,
   rejectArticle,
   articleOfWeek,
-  statisticalTransaction
+  statisticalTransaction,
+  listLessorNeedAutoApproved,
 }

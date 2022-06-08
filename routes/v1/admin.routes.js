@@ -11,4 +11,6 @@ router.get('/get-list-lessor', auth(), AdminController.getListLessor)
 router.delete('/delete-account/:accountId', auth(), AdminController.deleteAccount)
 router.get('/article-of-week', AdminController.articleOfWeek)
 router.get('/statistical-transaction', AdminController.statisticalTransaction)
+router.get('/list-lessor-need-autoapproved', AdminController.listLessorNeedAutoApproved)
+
 module.exports = router;
