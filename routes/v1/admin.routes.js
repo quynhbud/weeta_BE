@@ -6,6 +6,7 @@ const router = express.Router();
 router.post('/approvedArticle/:id',auth(), AdminController.approvedArticle )
 router.post('/rejectArticle/:id', auth(), AdminController.rejectArticle)
 router.post('/approvedIDCard/:id',auth(), AdminController.approvedIDCard )
+router.post('/rejectIDCard/:id',auth(), AdminController.rejectIDCard )
 router.get('/get-list-user', auth(), AdminController.getListUser)
 router.get('/get-list-lessor', auth(), AdminController.getListLessor)
 router.delete('/delete-account/:accountId', auth(), AdminController.deleteAccount)

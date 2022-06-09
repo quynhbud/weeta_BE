@@ -18,7 +18,7 @@ const approvedArticle = async (articleId) => {
 
 const approvedIDCard = async (accountId) => {
   const update = await Account.updateOne({ _id: accountId }, { isAutoApproved: true });
-  await Lessor.updateMany({account: accountId}, {isNeedAutoApproved: false});
+  await Lessor.updateOne({account: accountId}, {isNeedAutoApproved: false});
   const account = await Account.findById(accountId);
   return account;
 };
@@ -182,6 +182,11 @@ const listLessorNeedAutoApproved = async (data) => {
     }
   }
 }
+const rejectIDCard = async (accountId) => {
+  await Lessor.updateOne({account: accountId}, {isNeedAutoApproved: false});
+  const account = await Account.findById(accountId);
+  return account;
+}
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -191,4 +196,5 @@ module.exports = {
   articleOfWeek,
   statisticalTransaction,
   listLessorNeedAutoApproved,
+  rejectIDCard,
 };

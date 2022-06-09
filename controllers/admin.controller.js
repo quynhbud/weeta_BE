@@ -73,6 +73,14 @@ const listLessorNeedAutoApproved = catchAsync(async(req, res) => {
   }
   sendSuccess(res, result.data, result.status, result.message);
 })
+const rejectIDCard = catchAsync(async(req,res) =>{
+  const accountID = req.params.id;
+  const account = await AdminService.rejectIDCard(accountID);
+  if (isEmpty(account)) {
+    return sendError(res, httpStatus.NOT_FOUND, 'reject fail');
+  }
+  sendSuccess(res, account, httpStatus.OK, 'reject successfully');
+})
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -83,4 +91,5 @@ module.exports = {
   articleOfWeek,
   statisticalTransaction,
   listLessorNeedAutoApproved,
+  rejectIDCard,
 }
