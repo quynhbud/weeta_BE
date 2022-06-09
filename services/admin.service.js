@@ -184,6 +184,7 @@ const listLessorNeedAutoApproved = async (data) => {
 }
 const rejectIDCard = async (accountId) => {
   await Lessor.updateOne({account: accountId}, {isNeedAutoApproved: false});
+  await Account.updateOne({_id: accountId}, {IDCard: []})
   const account = await Account.findById(accountId);
   return account;
 }
