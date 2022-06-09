@@ -158,6 +158,7 @@ const generateVerifyEmailToken = async (account) => {
 const checkOtp = async (token, otp) => {
     const tokenOtp = await Token.findOne({ token: token });
     const success = tokenOtp.otp == Number(otp) ? true : false;
+    await tokenOtp.remove();
     return success;
 };
 

@@ -69,10 +69,7 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
         await accountService.updateAccountById(user.id, {
             password: newPassword,
         });
-        await Token.deleteMany({
-            user: user.id,
-            type: tokenTypes.RESET_PASSWORD,
-        });
+        await resetPasswordTokenDoc.remove();
     } catch (error) {
         throw new AppError(httpStatus.UNAUTHORIZED, 'Password reset failed');
     }
@@ -98,7 +95,7 @@ const verifyEmail = async (verifyEmailToken) => {
             await accountService.updateAccountById(account.id, {
                 isEmailVerified: true,
             });
-            //   await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+            await verifyEmailTokenDoc.remove();
         }
     } catch (error) {
         throw new AppError(
