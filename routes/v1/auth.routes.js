@@ -1,7 +1,7 @@
 const express = require('express');
 const validate = require('../../middlewares/validate');
 const authValidation = require('../../validations/auth.validation.js');
-const authController = require('../../controllers/auth.controller');
+const { authController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
 const multer = require('multer');
 const storage = multer.memoryStorage();

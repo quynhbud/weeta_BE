@@ -13,3 +13,4 @@ module.exports.Location = require('./location.model');
 module.exports.ServicePackageTransaction = require('./service-package-transaction.model');
 module.exports.MemberPackageTransaction = require('./member-package-transaction.model');
 module.exports.Review = require('./review.model');
+module.exports.ReportReason = require('./reportReason.model');
