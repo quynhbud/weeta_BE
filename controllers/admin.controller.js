@@ -90,22 +90,8 @@ const rejectIDCard = catchAsync(async (req, res) => {
     }
     sendSuccess(res, account, httpStatus.OK, 'reject successfully');
 });
-const totalRevenue = catchAsync(async(req,res) => {
-    const result = await adminService.totalRevenue();
-    if (result.status !== 200) {
-        return sendError(res, result.status, 'Lỗi');
-    }
-    sendSuccess(res, result.data, result.status, result.message);
-}) 
-const totalArticle = catchAsync(async(req,res) => {
-    const result = await adminService.totalArticle();
-    if (result.status !== 200) {
-        return sendError(res, result.status, 'Lỗi');
-    }
-    sendSuccess(res, result.data, result.status, result.message);
-}) 
-const totalUser = catchAsync(async(req,res) => {
-    const result = await adminService.totalUser(req.query);
+const total = catchAsync(async(req,res) => {
+    const result = await adminService.total();
     if (result.status !== 200) {
         return sendError(res, result.status, 'Lỗi');
     }
@@ -122,7 +108,5 @@ module.exports = {
     statisticalTransaction,
     listLessorNeedAutoApproved,
     rejectIDCard,
-    totalRevenue,
-    totalArticle,
-    totalUser,
+    total,
 };

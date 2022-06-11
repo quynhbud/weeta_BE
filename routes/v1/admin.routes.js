@@ -20,7 +20,5 @@ router.get(
     '/list-lessor-need-autoapproved',
     adminController.listLessorNeedAutoApproved
 );
-router.get('/total-revenue', adminController.totalRevenue);
-router.get('/total-article', adminController.totalArticle);
-router.get('/total-user', adminController.totalUser);
+router.get('/total', adminController.total);
 module.exports = router;
