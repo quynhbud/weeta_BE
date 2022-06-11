@@ -3,6 +3,7 @@ const { isEmpty, groupBy, sum, map, reverse } = require('lodash');
 const { Account, Article, MemberPackageTransaction, ServicePackageTransaction, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
 const moment = require('moment');
+const { start } = require('pm2');
 
 const approvedArticle = async (articleId) => {
   const article = await Article.findById(articleId);
@@ -18,7 +19,7 @@ const approvedArticle = async (articleId) => {
 
 const approvedIDCard = async (accountId) => {
   const update = await Account.updateOne({ _id: accountId }, { isAutoApproved: true });
-  await Lessor.updateOne({account: accountId}, {isNeedAutoApproved: false});
+  await Lessor.updateOne({ account: accountId }, { isNeedAutoApproved: false });
   const account = await Account.findById(accountId);
   return account;
 };
@@ -95,21 +96,21 @@ const articleOfWeek = async () => {
     .format('YYYY-MM-DD HH:00:00');
   const endDate = moment().endOf('day').format('YYYY-MM-DD HH:59:59');
   const arrKey = Array.from({ length: 7 }, (_, i) =>
-  moment()
-  .subtract(6 - i, 'day')
-  .date(),
+    moment()
+      .subtract(6 - i, 'day')
+      .date(),
   );
   let newArr = [];
-  for(let i = arrKey.length-1 ;i>=0;i--){
-    if(arrKey[i-1] > arrKey[i]){
-      newArr.push(arrKey[i]+'/'+(month))
-      for(let k = i-1 ;k>=0;k--){
-        newArr.push(arrKey[k]+'/'+(month-1))
+  for (let i = arrKey.length - 1; i >= 0; i--) {
+    if (arrKey[i - 1] > arrKey[i]) {
+      newArr.push(arrKey[i] + '/' + (month))
+      for (let k = i - 1; k >= 0; k--) {
+        newArr.push(arrKey[k] + '/' + (month - 1))
       }
       i = 0;
     }
-    else{
-      newArr.push(arrKey[i]+'/'+(month))
+    else {
+      newArr.push(arrKey[i] + '/' + (month))
     }
   }
   reverse(newArr);
@@ -118,7 +119,7 @@ const articleOfWeek = async () => {
     const { createdAt } = itm;
     const numOfType = moment(createdAt).get('date');
     const month = moment(createdAt).get('month');
-    return numOfType+'/'+(month+1);
+    return numOfType + '/' + (month + 1);
   });
   const result = newArr.map((num) => {
     const articles = objArticle[num] || [];
@@ -148,33 +149,33 @@ const statisticalTransaction = async (data) => {
         .month() + 1,
   );
   let newArr = [];
-  for(let i = arrKey.length-1 ;i>=0;i--){
-    if(arrKey[i-1] > arrKey[i]){
-      newArr.push(arrKey[i]+'/'+(year))
-      for(let k = i-1 ;k>=0;k--){
-        newArr.push(arrKey[k]+'/'+(year-1))
+  for (let i = arrKey.length - 1; i >= 0; i--) {
+    if (arrKey[i - 1] > arrKey[i]) {
+      newArr.push(arrKey[i] + '/' + (year))
+      for (let k = i - 1; k >= 0; k--) {
+        newArr.push(arrKey[k] + '/' + (year - 1))
       }
       i = 0;
     }
-    else{
-      newArr.push(arrKey[i]+'/'+(year))
+    else {
+      newArr.push(arrKey[i] + '/' + (year))
     }
   }
   reverse(newArr)
   let transactions = [];
   if (data.type === 'MEMBERPACKAGE') {
     transactions = await MemberPackageTransaction
-    .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
+      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
   if (data.type === 'SERVICEPACKAGE') {
     transactions = await ServicePackageTransaction
-    .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
+      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
   const objTransaction = groupBy(transactions, (itm) => {
     const { createdAt } = itm;
     const numOfType = moment(createdAt).get('month') + 1;
     const year = moment(createdAt).get('year');
-    return numOfType+'/'+year
+    return numOfType + '/' + year
   });
   const result = newArr.map((num) => {
     const transactions = objTransaction[num] || [];
@@ -217,10 +218,74 @@ const listLessorNeedAutoApproved = async (data) => {
   }
 }
 const rejectIDCard = async (accountId) => {
-  await Lessor.updateOne({account: accountId}, {isNeedAutoApproved: false});
-  await Account.updateOne({_id: accountId}, {IDCard: []})
+  await Lessor.updateOne({ account: accountId }, { isNeedAutoApproved: false });
+  await Account.updateOne({ _id: accountId }, { IDCard: [] })
   const account = await Account.findById(accountId);
   return account;
+}
+const total = async () => {
+  try {
+    const startDate = moment().startOf('month').format('YYYY-MM-DD HH:00:00');
+    const endDate = moment().endOf('month').format('YYYY-MM-DD HH:00:00');
+    const prevStartDate = moment()
+      .subtract(1, 'month')
+      .startOf('month')
+      .format('YYYY-MM-DD HH:00:00');
+    const prevEndDate = moment()
+      .subtract(1, 'month')
+      .startOf('month')
+      .format('YYYY-MM-DD HH:00:00');
+    const [memberTrans, serviceTrans, memberTransPrevMonth, serviceTransPrevMonth, memberTransInMonth, serviceTransInMonth] =
+      await Promise.all([
+        MemberPackageTransaction.find({ status: 'SUCCESS' }),
+        ServicePackageTransaction.find({ status: 'SUCCESS' }),
+        MemberPackageTransaction.find({ status: 'SUCCESS', createdAt: { $gte: prevStartDate, $lte: prevEndDate } }),
+        ServicePackageTransaction.find({ status: 'SUCCESS', createdAt: { $gte: prevStartDate, $lte: prevEndDate } }),
+        MemberPackageTransaction.find({ status: 'SUCCESS', createdAt: { $gte: startDate, $lte: endDate } }),
+        ServicePackageTransaction.find({ status: 'SUCCESS', createdAt: { $gte: startDate, $lte: endDate } }),
+      ])
+    const totalTransactions = sum(map(memberTrans.concat(serviceTrans), 'transactionAmount')) || 0
+    const totalTransactionPrevMonth = sum(map(memberTransPrevMonth.concat(serviceTransPrevMonth), 'transactionAmount')) || 0
+    const totalTransactionInMonth = sum(map(memberTransInMonth.concat(serviceTransInMonth), 'transactionAmount')) || 0;
+
+    const [totalArticle, totalArticlePrevMonth, totalArticleInMonth] =
+      await Promise.all([
+        Article.find({ isApproved: true }).count(),
+        Article.find({ isApproved: true, createdAt: { $gte: prevStartDate, $lte: prevEndDate } }).count(),
+        Article.find({ isApproved: true, createdAt: { $gte: startDate, $lte: endDate } }).count(),
+      ])
+
+    const [totalUser, totalUserPrevMonth, totalUserInMonth] =
+      await Promise.all([
+        Account.find({ role: 'user', isEmailVerified: true }).count(),
+        Account.find({ role: 'user', isEmailVerified: true, createdAt: { $gte: prevStartDate, $lte: prevEndDate } }).count(),
+        Account.find({ role: 'user', isEmailVerified: true, createdAt: { $gte: startDate, $lte: endDate } }).count(),
+      ])
+
+    const [totalLessor, totalLesorPrevMonth, totalLessorInMonth] =
+      await Promise.all([
+        Account.find({ role: 'lessor', isEmailVerified: true }).count(),
+        Account.find({ role: 'lessor', isEmailVerified: true, createdAt: { $gte: prevStartDate, $lte: prevEndDate } }).count(),
+        Account.find({ role: 'lessor', isEmailVerified: true, createdAt: { $gte: startDate, $lte: endDate } }).count(),
+      ])
+    return {
+      status: 200,
+      data: [{
+        totalTransactions,
+        totalTransactionPrevMonth,
+        totalTransactionInMonth
+      },
+      { totalArticle, totalArticlePrevMonth, totalArticleInMonth },
+      { totalUser, totalUserPrevMonth, totalUserInMonth },
+      { totalLessor, totalLesorPrevMonth, totalLessorInMonth }
+      ],
+      message: "Lấy tổng doanh thu thành công"
+    }
+  } catch {
+    return {
+      status: 500
+    }
+  }
 }
 module.exports = {
   approvedArticle,
@@ -232,4 +297,5 @@ module.exports = {
   statisticalTransaction,
   listLessorNeedAutoApproved,
   rejectIDCard,
+  total,
 };

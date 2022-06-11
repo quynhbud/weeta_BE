@@ -90,6 +90,13 @@ const rejectIDCard = catchAsync(async (req, res) => {
     }
     sendSuccess(res, account, httpStatus.OK, 'reject successfully');
 });
+const total = catchAsync(async(req,res) => {
+    const result = await adminService.total();
+    if (result.status !== 200) {
+        return sendError(res, result.status, 'Lỗi');
+    }
+    sendSuccess(res, result.data, result.status, result.message);
+}) 
 module.exports = {
     approvedArticle,
     approvedIDCard,
@@ -101,4 +108,5 @@ module.exports = {
     statisticalTransaction,
     listLessorNeedAutoApproved,
     rejectIDCard,
+    total,
 };

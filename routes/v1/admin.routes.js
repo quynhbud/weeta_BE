@@ -20,5 +20,5 @@ router.get(
     '/list-lessor-need-autoapproved',
     adminController.listLessorNeedAutoApproved
 );
-
+router.get('/total', adminController.total);
 module.exports = router;
