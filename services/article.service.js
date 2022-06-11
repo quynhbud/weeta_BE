@@ -66,6 +66,7 @@ const createArticle = async (accountId, data, imageURLs) => {
 };
 const getListArticle = async (data) => {
     data.isDeleted = false;
+    data.isPublished = true;
     data.isApproved = true;
     data.servicePackageId = {
         in: ['623d88663d13700751208a7e', '623d886f3d13700751208a7f'],
@@ -169,6 +170,7 @@ const getListArticle = async (data) => {
 };
 const getListTinTop = async (data) => {
     data.isDelete = false;
+    data.isPublished = true;
     data.isApproved = true;
     data.servicePackageId = '623d885d3d13700751208a7d';
     const page = data.page * 1 || 1;
@@ -296,6 +298,24 @@ const updateArticleById = async (articleId, data) => {
 
 const getArticleById = async (id) => {
     return await Article.findById(id);
+};
+
+const deleteArticleById = async (id) => {
+    try {
+        const article = await Article.findById(id);
+        if (!article) throw new AppError('Không tìm thấy bài viết');
+        await article.remove();
+        return {
+            status: 200,
+            data: {},
+            message: 'Xóa bài viết thành công',
+        };
+    } catch {
+        return {
+            status: 500,
+            message: 'Xóa bài viết thất bại',
+        };
+    }
 };
 
 const updateArticle = async (data) => {
@@ -709,4 +729,5 @@ module.exports = {
     getAllArticle,
     getSaveArticle,
     getArticleById,
+    deleteArticleById,
 };

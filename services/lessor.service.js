@@ -36,6 +36,10 @@ const createLessor = async (id) => {
     return Lessor.create(lessor);
 };
 
+const getLessorById = async (id) => {
+    return await Lessor.findById(id);
+};
+
 const updateLessor = async (id, data) => {
     const lessor = await Lessor.findById(id);
     if (!lessor)
@@ -143,4 +147,5 @@ module.exports = {
     getListArticle,
     getListTransaction,
     updateLessor,
+    getLessorById,
 };

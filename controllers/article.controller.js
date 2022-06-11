@@ -2,7 +2,12 @@ const httpStatus = require('http-status');
 //const pick = require('../utils/pick');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { articleService, imageService, VNPayService } = require('../services');
+const {
+    articleService,
+    imageService,
+    VNPayService,
+    lessorService,
+} = require('../services');
 const { sendSuccess, sendError } = require('./return.controller');
 const { isEmpty } = require('lodash');
 const config = require('../config/config');
@@ -37,14 +42,30 @@ const updateArticle = catchAsync(async (req, res) => {
     sendSuccess(res, result.article, result.status, result.message);
 });
 const deleteArticle = catchAsync(async (req, res) => {
-    const articleId = req.params;
-    const article = await articleService.updateArticle(req.body, articleId);
-    sendSuccess(
-        res,
-        { article },
-        httpStatus.CREATED,
-        'Article deleted successfully'
-    );
+    const articleId = req.params.articleId;
+    const article = await articleService.getArticleById(articleId);
+    if (!article)
+        return sendError(res, httpStatus.NOT_FOUND, 'Article not found');
+    if (article.isPublished) {
+        const lessorId = req.user._id;
+        const result = await articleService.updateArticleById(articleId, {
+            isDeleted: true,
+        });
+        const lessor = await lessorService.getLessorById(lessorId);
+        if (!lessor)
+            return sendError(res, httpStatus.NOT_FOUND, 'Lessor not found');
+        await lessorService.updateLessor(lessorId, {
+            articleUsed: lessor.articleUsed - 1,
+        });
+        return sendSuccess(
+            res,
+            result,
+            httpStatus.OK,
+            'Article deleted successfully'
+        );
+    }
+    const result = await articleService.deleteArticleById(articleId);
+    sendSuccess(res, result.data, result.status, result.message);
 });
 
 const getListArticle = catchAsync(async (req, res) => {

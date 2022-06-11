@@ -42,7 +42,7 @@ const paymentPackage = catchAsync(async (req, res) => {
         );
         return sendSuccess(res, result, httpStatus.OK, 'Đã cập nhật gói tin');
     }
-    //
+    // Còn lại
     const result = await PaymentPackageService.paymentPackage(
         req,
         lessorId,
