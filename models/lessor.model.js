@@ -8,12 +8,6 @@ const LessorSchema = mongoose.Schema(
             ref: 'Account',
             require: false,
         },
-        memberPackageId: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'MemberPackage',
-            require: false,
-            default: '623ebe63be8ccfccc67bd97a',
-        },
         memberPackage: {
             type: String,
             enum: ['FREE', 'SAVE', 'STANDARD', 'PREMIUM'],

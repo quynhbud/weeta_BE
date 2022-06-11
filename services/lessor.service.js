@@ -7,6 +7,8 @@ const {
 } = require('../models/index');
 const SendOTPService = require('./sendOTP.service');
 const { isEmpty } = require('lodash');
+const AppError = require('../utils/appError');
+const httpStatus = require('http-status');
 
 function generateRandomNumber() {
     var minm = 100000;
@@ -32,6 +34,17 @@ const createLessor = async (id) => {
     };
     await Account.updateOne({ _id: id }, { role: 'lessor' });
     return Lessor.create(lessor);
+};
+
+const updateLessor = async (id, data) => {
+    const lessor = await Lessor.findById(id);
+    if (!lessor)
+        throw new AppError(
+            httpStatus.NOT_FOUND,
+            'Người cho thuê không tồn tại'
+        );
+    Object.assign(lessor, data);
+    return await lessor.save();
 };
 
 const getListArticle = async (data) => {
@@ -129,4 +142,5 @@ module.exports = {
     createLessor,
     getListArticle,
     getListTransaction,
+    updateLessor,
 };

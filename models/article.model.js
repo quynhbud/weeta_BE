@@ -47,6 +47,11 @@ const ArticleSchema = mongoose.Schema(
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'ServicePackage',
         },
+        servicePackage: {
+            type: String,
+            enum: ['COMMON', 'UP', 'TOP'],
+            default: 'COMMON',
+        },
         endDateService: {
             type: Date,
         },
@@ -63,7 +68,7 @@ const ArticleSchema = mongoose.Schema(
         },
         createdAt: {
             type: Date,
-        }
+        },
     },
     {
         timestamps: true,
@@ -77,18 +82,18 @@ ArticleSchema.virtual('aboutCreated').get(function () {
     const timeAgoSecond = timeAgoMilisecond / 1000;
     var timeResult = null;
     if (timeAgoSecond < 60) {
-      timeResult = timeAgoSecond.toFixed(0) + ' seconds ago';
+        timeResult = timeAgoSecond.toFixed(0) + ' seconds ago';
     } else if (timeAgoSecond < 3600) {
-      timeResult = (timeAgoSecond / 60).toFixed(0) + ' minutes ago';
+        timeResult = (timeAgoSecond / 60).toFixed(0) + ' minutes ago';
     } else if (timeAgoSecond < 86400) {
-      timeResult = (timeAgoSecond / 3600).toFixed(0) + ' hours ago';
+        timeResult = (timeAgoSecond / 3600).toFixed(0) + ' hours ago';
     } else {
-      timeResult = (timeAgoSecond / 86400).toFixed(0) + ' days ago';
+        timeResult = (timeAgoSecond / 86400).toFixed(0) + ' days ago';
     }
     return timeResult;
-  });
-ArticleSchema.virtual('isExpired').get(function() {
-     return this.endDate <= Date.now() ? true : false;
-})
+});
+ArticleSchema.virtual('isExpired').get(function () {
+    return this.endDate <= Date.now() ? true : false;
+});
 const Article = mongoose.model('Article', ArticleSchema);
 module.exports = Article;
