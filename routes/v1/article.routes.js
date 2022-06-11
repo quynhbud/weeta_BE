@@ -9,6 +9,11 @@ const router = express.Router();
 
 router.get('/getListArticle', articleController.getListArticle);
 router.post('/createArticle', auth(), upload, articleController.createArticle);
+router.patch(
+    '/deleteArticle/:articleId',
+    auth(),
+    articleController.deleteArticle
+);
 router.put(
     '/updateArticle/:articleId',
     auth(),
