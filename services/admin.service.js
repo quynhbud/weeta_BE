@@ -3,6 +3,7 @@ const { isEmpty, groupBy, sum, map, reverse } = require('lodash');
 const { Account, Article, MemberPackageTransaction, ServicePackageTransaction, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
 const moment = require('moment');
+const { start } = require('pm2');
 
 const approvedArticle = async (articleId) => {
   const article = await Article.findById(articleId);
@@ -222,6 +223,112 @@ const rejectIDCard = async (accountId) => {
   const account = await Account.findById(accountId);
   return account;
 }
+const totalRevenue = async() => {
+  try {
+    const startDate = moment().startOf('month').format('YYYY-MM-DD HH:00:00');
+    const endDate = moment().endOf('month').format('YYYY-MM-DD HH:00:00');
+    const prevStartDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const prevEndDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const [memberTrans, serviceTrans, memberTransPrevMonth, serviceTransPrevMonth, memberTransInMonth, serviceTransInMonth] = 
+      await Promise.all([
+        MemberPackageTransaction.find({status: 'SUCCESS'}),
+        ServicePackageTransaction.find({status: 'SUCCESS'}),
+        MemberPackageTransaction.find({status: 'SUCCESS', createdAt : { $gte: prevStartDate, $lte: prevEndDate }}),
+        ServicePackageTransaction.find({status: 'SUCCESS', createdAt : { $gte: prevStartDate, $lte: prevEndDate }}),
+        MemberPackageTransaction.find({status: 'SUCCESS', createdAt : { $gte: startDate, $lte: endDate }}),
+        ServicePackageTransaction.find({status: 'SUCCESS', createdAt : { $gte: startDate, $lte: endDate }}),
+      ])
+    const totalTransactions = sum(map(memberTrans.concat(serviceTrans), 'transactionAmount')) || 0
+    const totalTransactionPrevMonth = sum(map(memberTransPrevMonth.concat(serviceTransPrevMonth), 'transactionAmount')) || 0
+    const totalTransactionInMonth = sum(map(memberTransInMonth.concat(serviceTransInMonth), 'transactionAmount')) || 0 ;
+    return {
+      status: 200,
+      data: {
+        totalTransactions,
+        totalTransactionPrevMonth,
+        totalTransactionInMonth
+      },
+      message: "Lấy tổng doanh thu thành công"
+    }
+  } catch {
+    return {
+      status: 500
+    }
+  }
+}
+const totalArticle = async() => {
+  try {
+    const startDate = moment().startOf('month').format('YYYY-MM-DD HH:00:00');
+    const endDate = moment().endOf('month').format('YYYY-MM-DD HH:00:00');
+    const prevStartDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const prevEndDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const [totalArticle,  totalArticlePrevMonth, totalArticleInMonth] = 
+    await Promise.all([
+      Article.find({isApproved: true}).count(),
+      Article.find({isApproved: true, createdAt : { $gte: prevStartDate, $lte: prevEndDate }}).count(),
+      Article.find({isApproved: true, createdAt : { $gte: startDate, $lte: endDate }}).count(),
+    ])
+    return {
+      status: 200,
+      data: {
+        totalArticle,
+        totalArticlePrevMonth,
+        totalArticleInMonth
+      },
+      message: 'Lấy tổng tin đăng thành công'
+    }
+  } catch  {
+    return {
+      status: 500
+    }
+  }
+}
+const totalUser = async(data) => {
+  try {
+    const role = data.role;
+    const startDate = moment().startOf('month').format('YYYY-MM-DD HH:00:00');
+    const endDate = moment().endOf('month').format('YYYY-MM-DD HH:00:00');
+    const prevStartDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const prevEndDate = moment()
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD HH:00:00');
+    const [totalUser,  totalUserPrevMonth, totalUserInMonth] = 
+    await Promise.all([
+      Account.find({role: role, isEmailVerified: true}).count(),
+      Account.find({role: role, isEmailVerified: true, createdAt : { $gte: prevStartDate, $lte: prevEndDate }}).count(),
+      Account.find({role: role, isEmailVerified: true, createdAt : { $gte: startDate, $lte: endDate }}).count(),
+    ])
+    return {
+      status: 200,
+      data: {
+        totalUser,
+        totalUserPrevMonth,
+        totalUserInMonth
+      },
+      message: 'Lấy tổng người dùng thành công'
+    }
+  } catch  {
+    return {
+      status: 500
+    }
+  }
+}
 module.exports = {
   approvedArticle,
   approvedIDCard,
@@ -232,4 +339,7 @@ module.exports = {
   statisticalTransaction,
   listLessorNeedAutoApproved,
   rejectIDCard,
+  totalRevenue,
+  totalArticle,
+  totalUser,
 };
