@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { isEmpty, groupBy, sum, map } = require('lodash');
+const { isEmpty, groupBy, sum, map, reverse } = require('lodash');
 const { Account, Article, MemberPackageTransaction, ServicePackageTransaction, Lessor } = require('../models/index');
 const AppError = require('../utils/appError');
 const moment = require('moment');
@@ -88,22 +88,39 @@ const deleteAccount = async (data) => {
   }
 }
 const articleOfWeek = async () => {
+  const month = moment().get('month') + 1;
   const startDate = moment()
     .subtract(7, 'day')
     .startOf('day')
     .format('YYYY-MM-DD HH:00:00');
   const endDate = moment().endOf('day').format('YYYY-MM-DD HH:59:59');
   const arrKey = Array.from({ length: 7 }, (_, i) =>
-    moment()
-      .subtract(6 - i, 'day')
-      .date(),
+  moment()
+  .subtract(6 - i, 'day')
+  .date(),
   );
-  const articles = await Article.find({ createdAt: { $gte: startDate, $lte: endDate } });
+  let newArr = [];
+  for(let i = arrKey.length-1 ;i>=0;i--){
+    if(arrKey[i-1] > arrKey[i]){
+      newArr.push(arrKey[i]+'/'+(month))
+      for(let k = i-1 ;k>=0;k--){
+        newArr.push(arrKey[k]+'/'+(month-1))
+      }
+      i = 0;
+    }
+    else{
+      newArr.push(arrKey[i]+'/'+(month))
+    }
+  }
+  reverse(newArr);
+  const articles = await Article.find({ createdAt: { $gte: startDate, $lte: endDate }, isApproved: true });
   const objArticle = groupBy(articles, (itm) => {
     const { createdAt } = itm;
-    return numOfType = moment(createdAt).get('date');
+    const numOfType = moment(createdAt).get('date');
+    const month = moment(createdAt).get('month');
+    return numOfType+'/'+(month+1);
   });
-  const result = arrKey.map((num) => {
+  const result = newArr.map((num) => {
     const articles = objArticle[num] || [];
     return {
       time: num,
@@ -117,6 +134,7 @@ const articleOfWeek = async () => {
   }
 }
 const statisticalTransaction = async (data) => {
+  const year = moment().get('year');
   const startDate = moment()
     .subtract(12, 'month')
     .startOf('month')
@@ -129,20 +147,36 @@ const statisticalTransaction = async (data) => {
         .subtract(11 - i, 'month')
         .month() + 1,
   );
+  let newArr = [];
+  for(let i = arrKey.length-1 ;i>=0;i--){
+    if(arrKey[i-1] > arrKey[i]){
+      newArr.push(arrKey[i]+'/'+(year))
+      for(let k = i-1 ;k>=0;k--){
+        newArr.push(arrKey[k]+'/'+(year-1))
+      }
+      i = 0;
+    }
+    else{
+      newArr.push(arrKey[i]+'/'+(year))
+    }
+  }
+  reverse(newArr)
   let transactions = [];
   if (data.type === 'MEMBERPACKAGE') {
     transactions = await MemberPackageTransaction
-      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
+    .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
   if (data.type === 'SERVICEPACKAGE') {
     transactions = await ServicePackageTransaction
-      .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
+    .find({ createdAt: { $gte: startDate, $lte: endDate }, status: 'SUCCESS' });
   }
   const objTransaction = groupBy(transactions, (itm) => {
     const { createdAt } = itm;
-    return numOfType = moment(createdAt).get('month') + 1;
+    const numOfType = moment(createdAt).get('month') + 1;
+    const year = moment(createdAt).get('year');
+    return numOfType+'/'+year
   });
-  const result = arrKey.map((num) => {
+  const result = newArr.map((num) => {
     const transactions = objTransaction[num] || [];
     return {
       time: num,
