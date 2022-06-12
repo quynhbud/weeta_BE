@@ -55,10 +55,10 @@ const deleteReason = async (id) => {
     }
 };
 
-const getListReason = async () => {
+const getListReason = async (params) => {
     try {
-        const reasons = await ReportReason.find();
-        const total = await ReportReason.find().count();
+        const reasons = await ReportReason.find({ ...params });
+        const total = await ReportReason.find({ ...params }).count();
         return {
             status: 200,
             data: { reasons, total },

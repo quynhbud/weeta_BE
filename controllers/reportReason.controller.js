@@ -31,7 +31,7 @@ const deleteReason = catchAsync(async (req, res) => {
 });
 
 const getListReason = catchAsync(async (req, res) => {
-    const result = await reportReasonService.getListReason();
+    const result = await reportReasonService.getListReason(req.query);
     if (result.status !== 200) {
         sendError(res, result.status, result.message);
     }

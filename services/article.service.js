@@ -149,7 +149,7 @@ const getListArticle = async (data) => {
             servicePackageId: itm.servicePackageId,
             timeService: itm.timeService,
             price: itm.price,
-            isDelete: itm.isDelete,
+            isDeleted: itm.isDeleted,
             aboutCreated: itm.aboutCreated,
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
@@ -169,7 +169,7 @@ const getListArticle = async (data) => {
     return result;
 };
 const getListTinTop = async (data) => {
-    data.isDelete = false;
+    data.isDeleted = false;
     data.isPublished = true;
     data.isApproved = true;
     data.servicePackageId = '623d885d3d13700751208a7d';
@@ -251,7 +251,7 @@ const getListTinTop = async (data) => {
             servicePackageId: itm.servicePackageId,
             timeService: itm.timeService,
             price: itm.price,
-            isDelete: itm.isDelete,
+            isDeleted: itm.isDeleted,
             aboutCreated: itm.aboutCreated,
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
@@ -343,7 +343,7 @@ const updateArticle = async (data) => {
 const deleteArticle = async (data) => {
     const deleteArticle = await Article.updateOne(
         { _id: data.articleId },
-        { isDelete: true, deletedAt: new Date() }
+        { isDeleted: true, deletedAt: new Date() }
     );
     return deleteArticle;
 };
@@ -542,7 +542,7 @@ const savePaymentResult = async (data) => {
     }
 };
 const getAllArticle = async (data) => {
-    data.isDelete = data?.isDelete === 'true' ? true : false;
+    data.isDeleted = data?.isDeleted === 'true' ? true : false;
     data.isApproved = data?.isApproved === 'true' ? true : false;
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
@@ -598,7 +598,7 @@ const getAllArticle = async (data) => {
             servicePackageId: itm.servicePackageId,
             timeService: itm.timeService,
             price: itm.price,
-            isDelete: itm.isDelete,
+            isDeleted: itm.isDeleted,
             aboutCreated: itm.aboutCreated,
             isExpired: itm.isExpired,
             startDateService: itm.startDateService,
@@ -685,7 +685,7 @@ const getSaveArticle = async (data, accountId) => {
                 servicePackageId: itm.servicePackageId,
                 timeService: itm.timeService,
                 price: itm.price,
-                isDelete: itm.isDelete,
+                isDeleted: itm.isDeleted,
                 aboutCreated: itm.aboutCreated,
                 isExpired: itm.isExpired,
                 startDateService: itm.startDateService,
