@@ -15,5 +15,6 @@ router.post('/verifyOtp', auth(), lessorController.createLessor);
 router.get('/articles', auth(), lessorController.getListArticles);
 router.post('/updoadIDCard', auth(), upload, lessorController.uploadIDCard);
 router.get('/list-transaction', auth(), lessorController.getListTransaction);
+router.patch('/show-hiden-article/:id', auth(), lessorController.showOrHidenArticle);
 
 module.exports = router;

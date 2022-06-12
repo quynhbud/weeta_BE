@@ -68,6 +68,7 @@ const getListArticle = async (data) => {
     data.isDeleted = false;
     data.isPublished = true;
     data.isApproved = true;
+    data.isAvailable = true;
     data.servicePackageId = {
         in: ['623d88663d13700751208a7e', '623d886f3d13700751208a7f'],
     };
@@ -172,6 +173,7 @@ const getListTinTop = async (data) => {
     data.isDeleted = false;
     data.isPublished = true;
     data.isApproved = true;
+    data.isAvailable = true;
     data.servicePackageId = '623d885d3d13700751208a7d';
     const page = data.page * 1 || 1;
     const limit = data.limit * 1 || 10;
@@ -383,6 +385,8 @@ const searchArticle = async (data) => {
     const page = data?.page * 1 || 1;
     const limit = data?.limit * 1 || 10;
     //data.isDeleted = (data?.isDeleted === 'true') ? true : false;
+    data.isAvailable = true;
+    data.isPublished = true;
     data.isApproved = data?.isApproved === 'true' ? true : false;
     const skip = (page - 1) * limit;
     let searchField = data?.keyword || '';

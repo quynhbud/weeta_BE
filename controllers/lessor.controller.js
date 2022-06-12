@@ -71,10 +71,26 @@ const getListTransaction = catchAsync(async (req, res)=>{
     return sendSuccess(res, result, httpStatus.OK, 'Lấy danh sách thanh toán thành công');
 })
 
+const showOrHidenArticle = catchAsync(async (req, res)=>{
+    const lessorId = req.user._id;
+    const articleId = req.params.id;
+    const isShow = req.query.isShow;
+    const result = await lessorService.showOrHidenArticle({isShow, articleId});
+    if (!result) {
+        return sendError(
+            res,
+            httpStatus.BAD_REQUEST,
+            'Lỗi'
+        );
+    }
+    return sendSuccess(res, result, httpStatus.OK, 'Chuyển trạng thái thành công');
+})
+
 module.exports = {
     identifyPhoneNumber,
     getListArticles,
     createLessor,
     uploadIDCard,
     getListTransaction,
+    showOrHidenArticle,
 };

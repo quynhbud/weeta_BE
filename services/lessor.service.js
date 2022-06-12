@@ -140,7 +140,11 @@ const getListTransaction = async (data, lessorId) => {
         };
     }
 };
-
+const showOrHidenArticle = async(data) => {
+    await Article.updateOne({_id: data.articleId}, {isAvailable: data.isShow});
+    const article = await Article.findById(data.articleId)
+    return article;
+}
 module.exports = {
     identifyPhoneNumber,
     createLessor,
@@ -148,4 +152,5 @@ module.exports = {
     getListTransaction,
     updateLessor,
     getLessorById,
+    showOrHidenArticle,
 };
