@@ -103,7 +103,7 @@ const sendRejectBusinessEmail = async (to) => {
  */
  const sendRejectArticleEmail = async (to, id, reasonReject) => {
     const subject = 'Từ chối bài viết';
-    const articleUrl = `${config.frontEndUrl}/bai-dang/${id}`;
+    const articleUrl = `${config.frontEndUrl}bai-dang/${id}`;
     const html = htlmRejectArticle(articleUrl, reasonReject);
     await sendEmail(to, subject, '', html);
 };
@@ -115,8 +115,8 @@ const sendRejectBusinessEmail = async (to) => {
  */
  const sendAcceptArticleEmail = async (to, id) => {
     const subject = 'Duyệt bài viết';
-    const articleUrl = `${config.frontEndUrl}/bai-dang/${id}`;
-    const html = htlmAcceptArticle(id, articleUrl);
+    const articleUrl = `${config.frontEndUrl}bai-dang/${id}`;
+    const html = htlmAcceptArticle(articleUrl);
     await sendEmail(to, subject, '', html);
 };
 module.exports = {
