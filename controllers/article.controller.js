@@ -219,6 +219,23 @@ const getSaveArticle = catchAsync(async (req, res) => {
         'Lấy danh sách tin đăng yêu thích thành công'
     );
 });
+const suggestArticle = catchAsync(async(req, res) => {
+    const accountId = req.user._id;
+    const result = await articleService.suggestArticle(req.query,accountId);
+    if (result.status !== 200) {
+        return sendError(
+            res,
+            httpStatus.BAD_REQUEST,
+            'Lấy danh sách tin đăng gợi ý thất bại'
+        );
+    }
+    return sendSuccess(
+        res,
+        result.data,
+        httpStatus.OK,
+        'Lấy danh sách tin đăng gợi ý thành công'
+    );
+})
 module.exports = {
     createArticle,
     getListArticle,
@@ -234,4 +251,5 @@ module.exports = {
     getIPN,
     getAllArticle,
     getSaveArticle,
+    suggestArticle,
 };
