@@ -71,7 +71,8 @@ const AccountSchema = mongoose.Schema(
         avatar: {
             type: String,
             required: false,
-            default: 'https://firebasestorage.googleapis.com/v0/b/weeta-housing.appspot.com/o/avatar_default.png?alt=media&token=34619e46-80b6-45e5-b8ce-760d618db094'
+            default:
+                'https://firebasestorage.googleapis.com/v0/b/weeta-housing.appspot.com/o/avatar_default.png?alt=media&token=34619e46-80b6-45e5-b8ce-760d618db094',
         },
         isEmailVerified: {
             type: Boolean,
@@ -98,6 +99,11 @@ const AccountSchema = mongoose.Schema(
                 ref: 'Article',
             },
         ],
+        accountType: {
+            type: String,
+            enum: ['normal', 'google', 'facebook'],
+            default: 'normal',
+        },
     },
     {
         timestamps: true,

@@ -10,6 +10,9 @@ const upload = multer({ storage: storage }).single('file');
 const router = express.Router();
 
 router.post('/login', validate(authValidation.login), authController.login);
+router.get('/check-account-exist/:email', authController.checkAccountExists);
+router.post('/login-google', authController.loginWithGoogle);
+router.post('/login-facebook', authController.loginWithFacebook);
 router.get('/forgot-password/:email', authController.forgotPassword);
 router.post(
     '/reset-password',

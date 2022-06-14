@@ -10,6 +10,7 @@ const {
     accountService,
     imageService,
 } = require('../services');
+const { generateFromEmail } = require('unique-username-generator');
 
 const login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
@@ -22,11 +23,109 @@ const login = catchAsync(async (req, res) => {
     }
     const token = await tokenService.generateAuthTokens(user);
     const { role } = user;
-    sendSuccess(
+    sendSuccess(res, { token, role }, httpStatus.OK, 'Đăng nhập thành công');
+});
+
+const checkAccountExists = catchAsync(async (req, res) => {
+    const { email } = req.params;
+    const user = await accountService.getOneAccount({
+        email,
+        accountType: 'normal',
+    });
+    if (user) {
+        return sendSuccess(
+            res,
+            { isExist: true },
+            httpStatus.OK,
+            'Tài khoản đã tồn tại'
+        );
+    }
+    return sendSuccess(
         res,
-        { token, role, userId: user._id },
+        { isExist: false },
         httpStatus.OK,
-        'Đăng nhập thành công'
+        'Tài khoản chưa tồn tại'
+    );
+});
+
+const loginWithGoogle = catchAsync(async (req, res) => {
+    const { email, fullname, avatar } = req.body;
+    const user = await accountService.getAccountByEmail(email);
+    if (!!user) {
+        if (user.accountType && user.accountType !== 'google') {
+            await accountService.updateAccountById(user._id, {
+                accountType: 'google',
+                fullname,
+                avatar,
+            });
+        }
+        const token = await tokenService.generateAuthTokens(user);
+        const { role } = user;
+        return sendSuccess(
+            res,
+            { token, role },
+            httpStatus.OK,
+            'Đăng nhập thành công'
+        );
+    }
+    const username = generateFromEmail(email, 3);
+    const newUser = await accountService.createAccount({
+        email,
+        fullname,
+        avatar,
+        username,
+        password: '123456.abc',
+        phoneNumber: `09${new Date().getTime().toString().slice(5)}`,
+        accountType: 'google',
+    });
+    const token = await tokenService.generateAuthTokens(newUser);
+    const { role } = newUser;
+    return sendSuccess(
+        res,
+        { token, role },
+        httpStatus.OK,
+        'Đăng nhập google thành công'
+    );
+});
+
+const loginWithFacebook = catchAsync(async (req, res) => {
+    const { email, fullname, avatar } = req.body;
+    const user = await accountService.getAccountByEmail(email);
+    if (!!user) {
+        if (user.accountType && user.accountType !== 'facebook') {
+            await accountService.updateAccountById(user._id, {
+                accountType: 'facebook',
+                fullname,
+                avatar,
+            });
+        }
+        const token = await tokenService.generateAuthTokens(user);
+        const { role } = user;
+        return sendSuccess(
+            res,
+            { token, role },
+            httpStatus.OK,
+            'Đăng nhập thành công'
+        );
+    }
+    const username = generateFromEmail(email, 3);
+    const newUser = await accountService.createAccount({
+        email,
+        fullname,
+        avatar,
+        username,
+        password: '123456.abc',
+        phoneNumber: `09${new Date().getTime().toString().slice(5)}`,
+        accountType: 'facebook',
+    });
+    console.log(`newUser`, newUser);
+    const token = await tokenService.generateAuthTokens(newUser);
+    const { role } = newUser;
+    return sendSuccess(
+        res,
+        { token, role },
+        httpStatus.OK,
+        'Đăng nhập facebook thành công'
     );
 });
 
@@ -93,4 +192,7 @@ module.exports = {
     sendVerificationEmail,
     verifyEmail,
     getProfile,
+    checkAccountExists,
+    loginWithGoogle,
+    loginWithFacebook,
 };
