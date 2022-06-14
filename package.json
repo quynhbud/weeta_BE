@@ -35,7 +35,7 @@
         "express-mongo-sanitize": "^2.0.0",
         "express-rate-limit": "^5.0.0",
         "firebase": "^8.6.8",
-        "firebase-admin": "^9.10.0",
+        "firebase-admin": "^10.3.0",
         "formidable": "^2.0.1",
         "helmet": "^4.1.0",
         "http-status": "^1.5.2",
