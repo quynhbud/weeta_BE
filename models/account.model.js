@@ -74,6 +74,14 @@ const AccountSchema = mongoose.Schema(
             default:
                 'https://firebasestorage.googleapis.com/v0/b/weeta-housing.appspot.com/o/avatar_default.png?alt=media&token=34619e46-80b6-45e5-b8ce-760d618db094',
         },
+        desired: {
+            area: Number,
+            typeUser: Array,
+            limitTime: Boolean,
+            withLessor: Boolean,
+            district: Number,
+            ward: Number,
+        },
         isEmailVerified: {
             type: Boolean,
             default: false,

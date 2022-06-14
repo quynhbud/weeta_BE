@@ -37,5 +37,6 @@ router.get('/vnpay_ipn', articleController.getIPN);
 router.get('/save-payment-result', articleController.savePaymentResult);
 router.get('/get-all-article', articleController.getAllArticle);
 router.get('/get-save-article', auth(), articleController.getSaveArticle);
+router.get('/suggest-article', auth(), articleController.suggestArticle);
 
 module.exports = router;
