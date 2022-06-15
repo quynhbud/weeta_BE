@@ -717,6 +717,105 @@ const getSaveArticle = async (data, accountId) => {
         };
     }
 };
+const suggestArticle = async (data, accountId) => {
+    try {
+        const page = data?.page * 1 || 1;
+        const limit = data?.limit * 1 || 10;
+        data.isAvailable = true;
+        data.isPublished = true;
+        data.isApproved = data?.isApproved === 'true' ? true : false;
+        const skip = (page - 1) * limit;
+        const account = await Account.findById(accountId);
+        const { desired } = account;
+        let price = {}
+        if ('SV'.includes(desired.typeUser)) {
+            price = {
+                $lte: 5000000
+            }
+        }
+        if ('NV'.includes(desired.typeUser)) {
+            price = {
+                $gte: 5000000,
+                $lte: 10000000
+            }
+        }
+        const articles = await Article.find({
+            district: desired.district, price,
+            $or: [{ limitTime: desired.limitTime }, { liveWithOwner: desired.liveWithOwner }]
+        })
+            .sort({ servicePackageId: 'asc', createdAt: 'desc' })
+            .limit(limit)
+            .skip(skip)
+            .exec();
+        const total = await Article.find({
+            district: desired.district, price,
+            $or: [{ limitTime: desired.limitTime }, { liveWithOwner: desired.liveWithOwner }]
+        }).count();
+        const servicePackageIds = map(articles, 'servicePackageId');
+        const servicePackages = await ServicePackage.find({
+            _id: { $in: servicePackageIds },
+        }).exec();
+        const city = await Location.findOne({ code: 79 });
+        const objDistrict = keyBy(city.districts, 'code');
+        const objServicePackage = keyBy(servicePackages, '_id');
+        const article = articles.map((itm) => {
+            const { servicePackageId, street } = itm;
+            const district = objDistrict[itm.district] || {};
+            const objWard = keyBy(district.wards, 'code');
+            const ward = objWard[itm.ward] || {};
+            const address =
+                street +
+                ', ' +
+                ward.name +
+                ', ' +
+                district.name +
+                ', ' +
+                city.name;
+            const servicePackage = objServicePackage[servicePackageId] || {};
+            return {
+                _id: itm._id,
+                title: itm.title,
+                address,
+                location: itm.location,
+                image: itm.image,
+                area: itm.area,
+                description: itm.description,
+                lessor: itm.lessor,
+                isApproved: itm.isApproved,
+                isAvailable: itm.isAvailable,
+                createdAt: itm.createdAt,
+                startDate: itm.startDate,
+                endDate: itm.endDate,
+                servicePackageId: itm.servicePackageId,
+                timeService: itm.timeService,
+                price: itm.price,
+                isDeleted: itm.isDeleted,
+                aboutCreated: itm.aboutCreated,
+                isExpired: itm.isExpired,
+                startDateService: itm.startDateService,
+                endDateService: itm.endDateService,
+                servicePackageName: servicePackage.serviceName,
+            };
+        });
+        let isOver = false;
+        if (page * limit >= total || isEmpty(article)) {
+            isOver = true;
+        }
+        return {
+            status: 200,
+            message: "OK",
+            data: { article, total, isOver }
+        }
+    }
+    catch {
+        return {
+            status: 500,
+            message: 'Loi'
+        }
+
+    }
+
+}
 module.exports = {
     createArticle,
     getListArticle,
@@ -734,4 +833,5 @@ module.exports = {
     getSaveArticle,
     getArticleById,
     deleteArticleById,
+    suggestArticle,
 };

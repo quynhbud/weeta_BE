@@ -25,6 +25,16 @@ const ArticleSchema = mongoose.Schema(
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'Account',
         },
+        facilities: {
+            typeUser: Array,
+            wifi: Boolean,
+            parking: Boolean,
+            limitTime: Boolean,
+            liveWithOwner: Boolean,
+            eletronic: Number,
+            water: Number,
+
+        },
         isApproved: {
             type: Boolean,
             default: false,
