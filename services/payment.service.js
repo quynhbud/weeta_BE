@@ -177,7 +177,7 @@ const savePaymentResult = async (data) => {
     }
 };
 const updateMemberPackage = async (data) => {
-    const memberPackage = await MemberPackage.findOne(data.memberPackageName);
+    const memberPackage = await MemberPackage.findOne({memberPackageName: data.memberPackage});
     const updateData = {
         memberPackage: memberPackage.memberPackageName,
         articleTotal: memberPackage.articlePerMonth,

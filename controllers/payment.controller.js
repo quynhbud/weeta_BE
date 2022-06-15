@@ -74,12 +74,12 @@ const savePaymentMomo = catchAsync(async (req, res) => {
     const { type, articleId, paymentId } = result;
     if (type === 'SERVICEPACKAGE') {
         res.writeHead(301, {
-            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`,
+            Location: `https://weeta-housing.netlify.app/thanh-toan-thanh-cong/?type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`,
         }).end();
     }
     if (type === 'MEMBERPACKAGE') {
         res.writeHead(301, {
-            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=MEMBERPACKAGE&paymentId=${paymentId}`,
+            Location: `https://weeta-housing.netlify.app/thanh-toan-thanh-cong/?type=MEMBERPACKAGE&paymentId=${paymentId}`,
         }).end();
     }
 });
@@ -92,12 +92,12 @@ const savePaymentResult = catchAsync(async (req, res) => {
     const { type, articleId, paymentId } = result;
     if (type === 'SERVICEPACKAGE') {
         res.writeHead(301, {
-            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`,
+            Location: `https://weeta-housing.netlify.app/thanh-toan-thanh-cong/?type=SERVICEPACKAGE&articleId=${articleId}&paymentId=${paymentId}`,
         }).end();
     }
     if (type === 'MEMBERPACKAGE') {
         res.writeHead(301, {
-            Location: `https://weeta-housing.vercel.app/thanh-toan-thanh-cong/?type=MEMBERPACKAGE&paymentId=${paymentId}`,
+            Location: `https://weeta-housing.netlify.app/thanh-toan-thanh-cong/?type=MEMBERPACKAGE&paymentId=${paymentId}`,
         }).end();
     }
 });

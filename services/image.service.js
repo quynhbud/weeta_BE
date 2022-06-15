@@ -58,7 +58,7 @@ const addMultiImage = async(files) => {
                 }
             } else {
                 const name = file.originalname.split(".")[0];
-                const type = file.originalname.split(".")[1];
+                const type = file.mimetype.split("/")[1];
                 const timestamp = new Date().getTime();
                 const fileName = `${name}_${timestamp}.${type}`;
                 const blob = firebase.bucket.file(fileName)
