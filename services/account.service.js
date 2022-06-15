@@ -78,8 +78,13 @@ const getAccountByEmail = async (email) => {
     return Account.findOne({ email: email });
 };
 
-const getAccount = async () => {
-    return Account.find();
+const getOneAccount = async (query) => {
+    const result = await Account.findOne({ ...query });
+    return result;
+};
+
+const getAccount = async (query) => {
+    return Account.find({ ...query });
 };
 
 /**
@@ -154,7 +159,7 @@ const updateAvatar = async (id, avatar) => {
 const updateIDCard = async (id, IDCard) => {
     await Account.updateOne({ _id: id }, { IDCard: IDCard });
     const account = await Account.findById(id);
-    await Lessor.updateOne({account: id},{isNeedAutoApproved: true})
+    await Lessor.updateOne({ account: id }, { isNeedAutoApproved: true });
     return account;
 };
 
@@ -227,4 +232,5 @@ module.exports = {
     updateIDCard,
     getProfile,
     saveArticle,
+    getOneAccount,
 };
