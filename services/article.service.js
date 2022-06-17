@@ -13,7 +13,6 @@ const moment = require('moment');
 const AppError = require('../utils/appError');
 
 const createArticle = async (accountId, data, imageURLs) => {
-    const currentTime = new Date();
     const lessor = await Lessor.findOne({ account: accountId });
     const account = await Account.findOne({ _id: accountId });
     if (account.role != 'lessor') {
@@ -28,6 +27,7 @@ const createArticle = async (accountId, data, imageURLs) => {
             message: 'Bạn không còn lượt đăng tin nào',
         };
     }
+    const currentTime = new Date();
     const dataArticle = new Article({
         title: data.title,
         district: data.district,
@@ -35,10 +35,8 @@ const createArticle = async (accountId, data, imageURLs) => {
         street: data.street,
         price: data.price,
         area: data.area,
-        location: {
-            latitude: data?.latitude || 0,
-            longitude: data?.longtitude || 0,
-        },
+        location: JSON.parse(data.location),
+        facilities: JSON.parse(data.facilities),
         description: data.description,
         lessor: accountId,
         image: imageURLs,
@@ -327,7 +325,11 @@ const updateArticle = async (data) => {
     }
     const updateArticle = await Article.updateOne(
         { _id: data.articleId },
-        data
+        {
+            ...data,
+            location: JSON.parse(data.location),
+            facilities: JSON.parse(data.facilities),
+        }
     );
     if (updateArticle.modifiedCount > 0) {
         const article = await Article.findById(data.articleId);
@@ -727,29 +729,37 @@ const suggestArticle = async (data, accountId) => {
         const skip = (page - 1) * limit;
         const account = await Account.findById(accountId);
         const { desired } = account;
-        let price = {}
+        let price = {};
         if ('SV'.includes(desired.typeUser)) {
             price = {
-                $lte: 5000000
-            }
+                $lte: 5000000,
+            };
         }
         if ('NV'.includes(desired.typeUser)) {
             price = {
                 $gte: 5000000,
-                $lte: 10000000
-            }
+                $lte: 10000000,
+            };
         }
         const articles = await Article.find({
-            district: desired.district, price,
-            $or: [{ limitTime: desired.limitTime }, { liveWithOwner: desired.liveWithOwner }]
+            district: desired.district,
+            price,
+            $or: [
+                { limitTime: desired.limitTime },
+                { liveWithOwner: desired.liveWithOwner },
+            ],
         })
             .sort({ servicePackageId: 'asc', createdAt: 'desc' })
             .limit(limit)
             .skip(skip)
             .exec();
         const total = await Article.find({
-            district: desired.district, price,
-            $or: [{ limitTime: desired.limitTime }, { liveWithOwner: desired.liveWithOwner }]
+            district: desired.district,
+            price,
+            $or: [
+                { limitTime: desired.limitTime },
+                { liveWithOwner: desired.liveWithOwner },
+            ],
         }).count();
         const servicePackageIds = map(articles, 'servicePackageId');
         const servicePackages = await ServicePackage.find({
@@ -803,19 +813,16 @@ const suggestArticle = async (data, accountId) => {
         }
         return {
             status: 200,
-            message: "OK",
-            data: { article, total, isOver }
-        }
-    }
-    catch {
+            message: 'OK',
+            data: { article, total, isOver },
+        };
+    } catch {
         return {
             status: 500,
-            message: 'Loi'
-        }
-
+            message: 'Loi',
+        };
     }
-
-}
+};
 module.exports = {
     createArticle,
     getListArticle,

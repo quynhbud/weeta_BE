@@ -1,5 +1,14 @@
 const mongoose = require('mongoose');
+const { TYPE_USER, PLACES } = require('../constant/base.constant');
 
+/**
+ * facilities: {
+ *  electronic: 0 = Free
+ *  water: 0 = Free
+ *  wifi: 0 = Free
+ *  limitTime: '' = Free
+ * }
+ */
 const ArticleSchema = mongoose.Schema(
     {
         title: {
@@ -26,14 +35,59 @@ const ArticleSchema = mongoose.Schema(
             ref: 'Account',
         },
         facilities: {
-            typeUser: Array,
-            wifi: Boolean,
-            parking: Boolean,
-            limitTime: Boolean,
-            liveWithOwner: Boolean,
-            eletronic: Number,
-            water: Number,
-
+            typeUser: {
+                type: [Number],
+                enum: TYPE_USER,
+                default: [],
+            },
+            electric: {
+                price: {
+                    type: Number,
+                    default: 0,
+                },
+                unit: {
+                    type: String,
+                    enum: ['kWh'],
+                    default: 'kWh',
+                },
+            },
+            water: {
+                price: {
+                    type: Number,
+                    default: 0,
+                },
+                unit: {
+                    type: String,
+                    enum: ['perCapita', 'block'],
+                    default: 'block',
+                },
+            },
+            wifi: {
+                price: {
+                    type: Number,
+                    default: 0,
+                },
+                unit: {
+                    type: String,
+                    enum: ['perCapita'],
+                    default: 'perCapita',
+                },
+            },
+            places_around: {
+                type: [Number],
+                enum: PLACES,
+                default: [],
+            },
+            limitTime: {
+                type: String,
+                default: '',
+            },
+            parking: {
+                type: Boolean,
+            },
+            liveWithOwner: {
+                type: Boolean,
+            },
         },
         isApproved: {
             type: Boolean,
@@ -43,10 +97,6 @@ const ArticleSchema = mongoose.Schema(
             type: Boolean,
             default: true,
         },
-        // createdAt: {
-        //     type: Date,
-        //     default: Date.now(),
-        // },
         startDateService: {
             type: Date,
         },
@@ -74,9 +124,6 @@ const ArticleSchema = mongoose.Schema(
             default: false,
         },
         deletedAt: {
-            type: Date,
-        },
-        createdAt: {
             type: Date,
         },
     },
