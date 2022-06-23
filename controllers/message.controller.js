@@ -20,7 +20,7 @@ const createMessage = catchAsync(async (req, res) => {
 
 // update message
 const updateMessage = catchAsync(async (req, res) => {
-    console.log('int eeee');
+    // console.log('int eeee');
     const body = req.body;
     const message = await messageService.updateMessage(
         req.params.messageId,

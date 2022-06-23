@@ -15,7 +15,8 @@ const createConversation = async (body) => {
             : receiverId + senderId;
     const conversation = await Conversation.findOne({
         _id: conversationId,
-    });
+    }).populate('members', '_id fullname avatar');
+    // .populate('latestMessage', '_id text isSeen isDelete createdAt');
     //   console.log("conversationService", conversation)
     if (conversation) {
         return conversation;
@@ -24,7 +25,11 @@ const createConversation = async (body) => {
         _id: conversationId,
         members: [body.senderId, body.receiverId],
     };
-    return await Conversation.create(data);
+    await Conversation.create(data);
+    return await Conversation.findOne({
+        _id: conversationId,
+    }).populate('members', '_id fullname avatar');
+    // .populate('latestMessage', '_id text isSeen isDelete createdAt');
 };
 
 const updateConversation = async (conversationId, body) => {
@@ -35,7 +40,7 @@ const updateConversation = async (conversationId, body) => {
         return AppError(httpStatus.NOT_FOUND, 'Không tìm thấy cuộc hội thoại');
     }
     Object.assign(conversation, body);
-    return conversation.save();
+    return await conversation.save();
 };
 
 const getConversation = async (memberId) => {
@@ -53,9 +58,10 @@ const getListConversations = async (data, accountId) => {
         members: { $in: accountId },
     })
         .populate('members', '_id fullname avatar')
-        .populate('latestMessage', '_id text isSeen isDelete createdAt')
+        // .populate('latestMessage', '_id text isSeen isDelete createdAt')
         .skip(skip)
         .limit(limit)
+        .sort({ 'latestMessage.createdAt': 'desc' })
         .exec();
     const totalConversation = await Conversation.find({
         members: { $in: [accountId.toString()] },
@@ -108,22 +114,22 @@ const searchConversations = async (data) => {
 const getListReceiverId = async (senderId) => {
     const conversations = await Conversation.find({
         members: { $in: senderId },
-    })
+    });
     let receiverIds = [];
     conversations.map((conver) => {
         const { members } = conver;
-        const receiverId = members.filter((o) => { return o != senderId });
+        const receiverId = members.filter((o) => {
+            return o != senderId;
+        });
         receiverIds.push(receiverId.toString());
-    })
+    });
     return receiverIds;
-
-
-}
+};
 module.exports = {
     createConversation,
     updateConversation,
     getConversation,
     getListConversations,
     searchConversations,
-    getListReceiverId
+    getListReceiverId,
 };

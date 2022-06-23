@@ -15,8 +15,27 @@ const ConversationSchema = new mongoose.Schema(
             },
         ],
         latestMessage: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'Message',
+            conversation: {
+                type: String,
+            },
+            sender: {
+                type: mongoose.SchemaTypes.ObjectId,
+                ref: 'Account',
+            },
+            text: {
+                type: String,
+            },
+            isSeen: {
+                type: Boolean,
+                default: false,
+            },
+            isDelete: {
+                type: Boolean,
+                default: false,
+            },
+            createdAt: {
+                type: String,
+            },
         },
         amountOfNotSeenMess: {
             type: Number,
