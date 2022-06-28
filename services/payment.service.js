@@ -210,6 +210,7 @@ const updateServicePackage = async (data) => {
         startDateService: currentTime,
         endDateService: moment(currentTime).add(data.numOfDate, 'day').format(),
         servicePackageId: servicePackage._id,
+        servicePackage: servicePackage.serviceName,
         isPublished: true,
     };
     await Article.updateOne({ _id: data.articleId }, updateData);
